@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use Modules\Employee\Models\Employee;
+use Modules\Employee\Models\EmployeeType;
 
 class School extends Model
 {
@@ -93,6 +94,14 @@ class School extends Model
     public function employees(): HasMany
     {
         return $this->hasMany(Employee::class);
+    }
+
+    /**
+     * Get the employee types for the school.
+     */
+    public function employeeTypes(): HasMany
+    {
+        return $this->hasMany(EmployeeType::class);
     }
 
     /**
