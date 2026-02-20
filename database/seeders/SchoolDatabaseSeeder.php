@@ -11,6 +11,11 @@ class SchoolDatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // $this->call([]);
+        $this->call([
+            SchoolSeeder::class,
+            DepartmentSeeder::class,
+            ProgramSeeder::class,
+            CourseSeeder::class,
+        ]);
     }
 }

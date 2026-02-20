@@ -22,7 +22,7 @@ Route::middleware(['auth', 'verified'])->prefix('dashboard')->group(function () 
     Route::resource('programs', ProgramController::class)->names('programs');
     Route::get('programs/{program}/delete', [ProgramController::class, 'confirmDelete'])->name('programs.delete');
     Route::put('programs/{program}/toggle-status', [ProgramController::class, 'toggleStatus'])->name('programs.toggle-status');
-    Route::get('api/programs', [ProgramController::class, 'getDepartments'])->name('programs.api');
+    Route::get('api/programs', [ProgramController::class, 'getPrograms'])->name('programs.api');
 
     // Courses
     Route::resource('courses', CourseController::class)->names('courses');

@@ -202,3 +202,233 @@ export interface DepartmentEditProps {
 export interface DepartmentDeleteProps {
     department: Department;
 }
+
+// Course Types
+
+export type CourseType = 'required' | 'elective' | 'core';
+
+export interface Course {
+    id: number;
+    uuid: string;
+    department_id: number | null;
+    program_id: number | null;
+    instructor_id: number | null;
+    name: string;
+    code: string | null;
+    description: string | null;
+    credits: number;
+    type: CourseType;
+    type_label: string;
+    semester: number | null;
+    year: number | null;
+    max_students: number;
+    current_enrollment: number;
+    available_seats: number | null;
+    schedule: string | null;
+    room: string | null;
+    prerequisites: string[] | null;
+    syllabus: string | null;
+    status: boolean;
+    department_name: string | null;
+    program_name: string | null;
+    instructor_name: string | null;
+    has_available_seats: boolean;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface CourseStats {
+    total: number;
+    active: number;
+    inactive: number;
+    required: number;
+    elective: number;
+    core: number;
+}
+
+export interface CourseFilters {
+    status?: string;
+    search?: string;
+    type?: string;
+    department_id?: string;
+    program_id?: string;
+}
+
+export interface CourseFormData {
+    department_id: number | null;
+    program_id: number | null;
+    instructor_id: number | null;
+    name: string;
+    code: string;
+    description: string;
+    credits: number;
+    type: CourseType;
+    semester: number | null;
+    year: number | null;
+    max_students: number;
+    current_enrollment: number;
+    schedule: string;
+    room: string;
+    prerequisites: string[];
+    syllabus: string;
+    status: boolean;
+}
+
+export interface DepartmentOption {
+    id: number;
+    name: string;
+}
+
+export interface ProgramOption {
+    id: number;
+    name: string;
+}
+
+export interface CourseIndexProps {
+    courses: PaginatedResponse<Course>;
+    filters: CourseFilters;
+    stats: CourseStats;
+    types: Record<CourseType, string>;
+    departments: DepartmentOption[];
+    programs: ProgramOption[];
+}
+
+export interface CourseShowProps {
+    course: Course;
+    stats: {
+        credits: number;
+        max_students: number;
+        current_enrollment: number;
+        available_seats: number;
+    };
+}
+
+export interface CourseCreateProps {
+    types: Record<CourseType, string>;
+    departments: DepartmentOption[];
+    programs: ProgramOption[];
+}
+
+export interface CourseEditProps {
+    course: Course;
+    types: Record<CourseType, string>;
+    departments: DepartmentOption[];
+    programs: ProgramOption[];
+}
+
+export interface CourseDeleteProps {
+    course: Course;
+}
+
+// Program Types
+
+export type DegreeLevel = 'certificate' | 'diploma' | 'associate' | 'bachelor' | 'master' | 'doctorate';
+
+export interface Program {
+    id: number;
+    uuid: string;
+    school_id: number | null;
+    department_id: number | null;
+    name: string;
+    code: string | null;
+    description: string | null;
+    degree_level: DegreeLevel;
+    degree_level_label: string;
+    duration_years: number | null;
+    credits_required: number | null;
+    tuition_fee: string | null;
+    admission_requirements: string | null;
+    program_coordinator: string | null;
+    max_students: number | null;
+    current_enrollment: number | null;
+    accreditation_status: string | null;
+    status: boolean;
+    school_name: string | null;
+    department_name: string | null;
+    courses_count: number | null;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface ProgramStats {
+    total: number;
+    active: number;
+    inactive: number;
+    bachelor: number;
+    master: number;
+    doctorate: number;
+}
+
+export interface ProgramFilters {
+    status?: string;
+    search?: string;
+    degree_level?: string;
+    school_id?: number | string;
+    department_id?: number | string;
+}
+
+export interface ProgramFormData {
+    school_id: number | null;
+    department_id: number | null;
+    name: string;
+    code: string;
+    description: string;
+    degree_level: DegreeLevel;
+    duration_years: number | null;
+    credits_required: number | null;
+    tuition_fee: number | null;
+    admission_requirements: string;
+    program_coordinator: string;
+    max_students: number | null;
+    current_enrollment: number | null;
+    accreditation_status: string;
+    status: boolean;
+}
+
+export interface ProgramSchoolOption {
+    id: number;
+    name: string;
+}
+
+export interface ProgramDepartmentOption {
+    id: number;
+    name: string;
+    school_id: number;
+}
+
+export interface ProgramIndexProps {
+    programs: PaginatedResponse<Program>;
+    filters: ProgramFilters;
+    stats: ProgramStats;
+    degreeLevels: Record<DegreeLevel, string>;
+    schools: ProgramSchoolOption[];
+    departments: ProgramDepartmentOption[];
+}
+
+export interface ProgramShowProps {
+    program: Program;
+    courses: any[];
+    stats: {
+        courses_count: number;
+        current_enrollment: number;
+        max_students: number;
+        credits_required: number;
+    };
+}
+
+export interface ProgramCreateProps {
+    degreeLevels: Record<DegreeLevel, string>;
+    schools: ProgramSchoolOption[];
+    departments: ProgramDepartmentOption[];
+}
+
+export interface ProgramEditProps {
+    program: Program;
+    degreeLevels: Record<DegreeLevel, string>;
+    schools: ProgramSchoolOption[];
+    departments: ProgramDepartmentOption[];
+}
+
+export interface ProgramDeleteProps {
+    program: Program;
+}
