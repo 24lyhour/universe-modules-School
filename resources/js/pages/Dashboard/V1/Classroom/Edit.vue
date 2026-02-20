@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ModalForm } from '@/components/shared';
+import { ModalForm, SearchableSelect } from '@/components/shared';
 import { useForm } from '@inertiajs/vue3';
 import { useModal } from 'momentum-modal';
 import { computed, watch } from 'vue';
@@ -117,6 +117,13 @@ const typeOptions = computed(() => {
     }));
 });
 
+const departmentOptions = computed(() => {
+    return props.departments.map(dept => ({
+        value: dept.id,
+        label: dept.name,
+    }));
+});
+
 const handleTypeChange = (value: string | number | boolean | bigint | Record<string, unknown> | null | undefined) => {
     if (typeof value === 'string') {
         form.type = value as ClassroomType;
@@ -171,16 +178,13 @@ const handleAcChange = (value: boolean | 'indeterminate') => {
                 <Label for="department_id">
                     Department <span class="text-destructive">*</span>
                 </Label>
-                <Select :model-value="String(form.department_id)" @update:model-value="handleDepartmentChange">
-                    <SelectTrigger :class="{ 'border-destructive': form.errors.department_id }">
-                        <SelectValue placeholder="Select department" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem v-for="dept in props.departments" :key="dept.id" :value="String(dept.id)">
-                            {{ dept.name }}
-                        </SelectItem>
-                    </SelectContent>
-                </Select>
+                <SearchableSelect
+                    v-model="form.department_id"
+                    :options="departmentOptions"
+                    placeholder="Select department"
+                    search-placeholder="Search departments..."
+                    empty-message="No departments found."
+                />
                 <p v-if="form.errors.department_id" class="text-xs text-destructive">
                     {{ form.errors.department_id }}
                 </p>

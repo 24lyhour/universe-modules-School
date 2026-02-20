@@ -10,12 +10,15 @@ class GetClassroomEditDataAction
 {
     public function execute(Classroom $classroom): array
     {
-        $departments = Department::where('status', true)
+        $departments = Department::with('school')
+            ->where('status', true)
             ->orderBy('name')
             ->get()
             ->map(fn ($department) => [
                 'id' => $department->id,
-                'name' => $department->name,
+                'name' => $department->school
+                    ? "{$department->name} ({$department->school->name})"
+                    : $department->name,
             ])
             ->toArray();
 
