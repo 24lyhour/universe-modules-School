@@ -14,6 +14,8 @@ class Department extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $table = 'school_departments';
+
     /**
      * The attributes that are mass assignable.
      */

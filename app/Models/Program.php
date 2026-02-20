@@ -13,6 +13,8 @@ class Program extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $table = 'school_programs';
+
     /**
      * Program degree levels.
      */

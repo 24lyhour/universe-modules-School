@@ -26,6 +26,7 @@ class CourseResource extends JsonResource
             'year' => $this->year,
             'max_students' => $this->max_students,
             'current_enrollment' => $this->current_enrollment,
+            'available_seats' => $this->max_students ? $this->max_students - $this->current_enrollment : null,
             'schedule' => $this->schedule,
             'room' => $this->room,
             'prerequisites' => $this->prerequisites,

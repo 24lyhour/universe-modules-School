@@ -13,6 +13,8 @@ class Course extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $table = 'school_courses';
+
     /**
      * Course types.
      */

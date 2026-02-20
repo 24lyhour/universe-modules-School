@@ -13,7 +13,7 @@ class ProgramResource extends JsonResource
         return [
             'id' => $this->id,
             'uuid' => $this->uuid,
-            'institution_id' => $this->institution_id,
+            'school_id' => $this->school_id,
             'department_id' => $this->department_id,
             'name' => $this->name,
             'code' => $this->code,
@@ -29,7 +29,7 @@ class ProgramResource extends JsonResource
             'current_enrollment' => $this->current_enrollment,
             'accreditation_status' => $this->accreditation_status,
             'status' => $this->status,
-            'institution_name' => $this->whenLoaded('institution', fn() => $this->institution?->name),
+            'school_name' => $this->whenLoaded('school', fn() => $this->school?->name),
             'department_name' => $this->whenLoaded('department', fn() => $this->department?->name),
             'courses_count' => $this->whenCounted('courses'),
             'created_at' => $this->created_at?->toIso8601String(),
@@ -40,6 +40,6 @@ class ProgramResource extends JsonResource
     protected function getDegreeLevelLabel(): string
     {
         $levels = Program::getDegreeLevels();
-        return $levels[$this->degree_level] ?? ucfirst($this->degree_level);
+        return $levels[$this->degree_level] ?? ucfirst($this->degree_level ?? '');
     }
 }

@@ -37,27 +37,71 @@ class SchoolServiceProvider extends ServiceProvider
     protected function registerMenuItems(): void
     {
         $this->app->booted(function () {
-            MenuService::addMenuItem(
-                menu: 'primary',
-                id: 'school',
-                title: __('Schools'),
-                url: route('school.schools.index'),
-                icon: 'GraduationCap',
-                order: 40,
-                permissions: null,
-                route: 'school.*'
-            );
+            try {
+                MenuService::addMenuItem(
+                    menu: 'primary',
+                    id: 'school',
+                    title: __('Schools'),
+                    url: route('school.schools.index'),
+                    icon: 'GraduationCap',
+                    order: 40,
+                    permissions: null,
+                    route: 'school.*'
+                );
 
-            MenuService::addSubmenuItem(
-                'primary',
-                'school',
-                __('All Schools'),
-                route('school.schools.index'),
-                10,
-                null,
-                'school.schools.*',
-                'Building2'
-            );
+                MenuService::addSubmenuItem(
+                    'primary',
+                    'school',
+                    __('All Schools'),
+                    route('school.schools.index'),
+                    10,
+                    null,
+                    'school.schools.*',
+                    'Building2'
+                );
+
+                // Only add submenu items if routes exist
+                if (\Route::has('school.departments.index')) {
+                    MenuService::addSubmenuItem(
+                        'primary',
+                        'school',
+                        __('Departments'),
+                        route('school.departments.index'),
+                        20,
+                        null,
+                        'school.departments.*',
+                        'Layers'
+                    );
+                }
+
+                if (\Route::has('school.programs.index')) {
+                    MenuService::addSubmenuItem(
+                        'primary',
+                        'school',
+                        __('Programs'),
+                        route('school.programs.index'),
+                        30,
+                        null,
+                        'school.programs.*',
+                        'BookOpen'
+                    );
+                }
+
+                if (\Route::has('school.courses.index')) {
+                    MenuService::addSubmenuItem(
+                        'primary',
+                        'school',
+                        __('Courses'),
+                        route('school.courses.index'),
+                        40,
+                        null,
+                        'school.courses.*',
+                        'FileText'
+                    );
+                }
+            } catch (\Exception $e) {
+                // Routes may not exist during migrations, ignore errors
+            }
         });
     }
 

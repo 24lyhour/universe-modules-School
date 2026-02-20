@@ -110,3 +110,95 @@ export interface SchoolEditProps {
 export interface SchoolDeleteProps {
     school: School;
 }
+
+// Department Types
+
+export interface SchoolOption {
+    value: string;
+    label: string;
+}
+
+export interface Department {
+    id: number;
+    uuid: string;
+    school_id: number;
+    name: string;
+    code: string | null;
+    description: string | null;
+    head_of_department: string | null;
+    email: string | null;
+    phone: string | null;
+    office_location: string | null;
+    established_year: number | null;
+    total_staff: number | null;
+    total_students: number | null;
+    status: boolean;
+    school_name: string | null;
+    school?: {
+        id: number;
+        name: string;
+        code: string | null;
+    };
+    programs_count: number | null;
+    courses_count: number | null;
+    employees_count: number | null;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface DepartmentStats {
+    total: number;
+    active: number;
+    inactive: number;
+}
+
+export interface DepartmentFilters {
+    status?: string;
+    search?: string;
+    school_id?: string;
+}
+
+export interface DepartmentFormData {
+    school_id: string;
+    name: string;
+    code: string;
+    description: string;
+    head_of_department: string;
+    email: string;
+    phone: string;
+    office_location: string;
+    established_year: number | null;
+    total_staff: number | null;
+    total_students: number | null;
+    status: boolean;
+}
+
+export interface DepartmentIndexProps {
+    departments: PaginatedResponse<Department>;
+    filters: DepartmentFilters;
+    stats: DepartmentStats;
+    schools: SchoolOption[];
+}
+
+export interface DepartmentShowProps {
+    department: Department;
+    programs: any[];
+    stats: {
+        programs_count: number;
+        courses_count: number;
+        employees_count: number;
+    };
+}
+
+export interface DepartmentCreateProps {
+    schools: SchoolOption[];
+}
+
+export interface DepartmentEditProps {
+    department: Department;
+    schools: SchoolOption[];
+}
+
+export interface DepartmentDeleteProps {
+    department: Department;
+}

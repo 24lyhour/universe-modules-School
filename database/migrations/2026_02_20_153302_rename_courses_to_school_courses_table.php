@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('programs', function (Blueprint $table) {
-            $table->renameColumn('institution_id', 'school_id');
-        });
+        if (Schema::hasTable('courses') && !Schema::hasTable('school_courses')) {
+            Schema::rename('courses', 'school_courses');
+        }
     }
 
     /**
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('programs', function (Blueprint $table) {
-            $table->renameColumn('school_id', 'institution_id');
-        });
+        if (Schema::hasTable('school_courses') && !Schema::hasTable('courses')) {
+            Schema::rename('school_courses', 'courses');
+        }
     }
 };

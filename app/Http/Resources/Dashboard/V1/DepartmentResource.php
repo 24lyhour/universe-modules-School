@@ -12,7 +12,7 @@ class DepartmentResource extends JsonResource
         return [
             'id' => $this->id,
             'uuid' => $this->uuid,
-            'institution_id' => $this->institution_id,
+            'school_id' => $this->school_id,
             'name' => $this->name,
             'code' => $this->code,
             'description' => $this->description,
@@ -24,7 +24,12 @@ class DepartmentResource extends JsonResource
             'total_staff' => $this->total_staff,
             'total_students' => $this->total_students,
             'status' => $this->status,
-            'institution_name' => $this->whenLoaded('institution', fn() => $this->institution?->name),
+            'school_name' => $this->whenLoaded('school', fn() => $this->school?->name),
+            'school' => $this->whenLoaded('school', fn() => [
+                'id' => $this->school->id,
+                'name' => $this->school->name,
+                'code' => $this->school->code,
+            ]),
             'programs_count' => $this->whenCounted('programs'),
             'courses_count' => $this->whenCounted('courses'),
             'employees_count' => $this->whenCounted('employees'),
