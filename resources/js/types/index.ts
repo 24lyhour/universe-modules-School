@@ -432,3 +432,118 @@ export interface ProgramEditProps {
 export interface ProgramDeleteProps {
     program: Program;
 }
+
+// Classroom Types
+
+export type ClassroomType = 'lecture_hall' | 'classroom' | 'lab' | 'seminar' | 'auditorium' | 'workshop';
+
+export interface EquipmentOption {
+    value: string;
+    label: string;
+}
+
+export interface Classroom {
+    id: number;
+    uuid: string;
+    department_id: number;
+    name: string;
+    code: string | null;
+    building: string | null;
+    floor: number | null;
+    capacity: number;
+    type: ClassroomType;
+    type_label: string;
+    equipment: string[];
+    description: string | null;
+    has_projector: boolean;
+    has_whiteboard: boolean;
+    has_ac: boolean;
+    is_available: boolean;
+    status: boolean;
+    department_name: string | null;
+    school_name: string | null;
+    full_location: string | null;
+    courses_count: number | null;
+    department?: {
+        id: number;
+        name: string;
+        school_id: number;
+        school?: {
+            id: number;
+            name: string;
+        };
+    };
+    created_at: string;
+    updated_at: string;
+}
+
+export interface ClassroomStats {
+    total: number;
+    active: number;
+    available: number;
+    by_type?: {
+        lecture_hall: number;
+        classroom: number;
+        lab: number;
+        seminar: number;
+        auditorium: number;
+        workshop: number;
+    };
+}
+
+export interface ClassroomFilters {
+    status?: string;
+    search?: string;
+    type?: string;
+    department_id?: string;
+}
+
+export interface ClassroomFormData {
+    department_id: number | string | null;
+    name: string;
+    code: string;
+    building: string;
+    floor: number | null;
+    capacity: number;
+    type: ClassroomType;
+    equipment: string[];
+    description: string;
+    has_projector: boolean;
+    has_whiteboard: boolean;
+    has_ac: boolean;
+    is_available: boolean;
+    status: boolean;
+}
+
+export interface ClassroomIndexProps {
+    classrooms: PaginatedResponse<Classroom>;
+    filters: ClassroomFilters;
+    stats: ClassroomStats;
+    types: Record<ClassroomType, string>;
+    departments: DepartmentOption[];
+}
+
+export interface ClassroomShowProps {
+    classroom: Classroom;
+    stats: {
+        capacity: number;
+        courses_count: number;
+    };
+}
+
+export interface ClassroomCreateProps {
+    types: Record<ClassroomType, string>;
+    departments: DepartmentOption[];
+    equipmentOptions: EquipmentOption[];
+}
+
+export interface ClassroomEditProps {
+    classroom: Classroom;
+    types: Record<ClassroomType, string>;
+    departments: DepartmentOption[];
+    equipmentOptions: EquipmentOption[];
+}
+
+export interface ClassroomDeleteProps {
+    classroom: Classroom;
+}

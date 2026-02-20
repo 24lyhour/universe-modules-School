@@ -30,6 +30,7 @@ class Course extends Model
         'department_id',
         'program_id',
         'instructor_id',
+        'classroom_id',
         'name',
         'code',
         'description',
@@ -95,6 +96,14 @@ class Course extends Model
     public function instructor(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'instructor_id');
+    }
+
+    /**
+     * Get the classroom for the course.
+     */
+    public function classroom(): BelongsTo
+    {
+        return $this->belongsTo(Classroom::class);
     }
 
     /**

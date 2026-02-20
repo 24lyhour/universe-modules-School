@@ -99,8 +99,21 @@ class SchoolServiceProvider extends ServiceProvider
                         'FileText'
                     );
                 }
+
+                if (\Route::has('school.classrooms.index')) {
+                    MenuService::addSubmenuItem(
+                        'primary',
+                        'school',
+                        __('Classrooms'),
+                        route('school.classrooms.index'),
+                        50,
+                        null,
+                        'school.classrooms.*',
+                        'DoorOpen'
+                    );
+                }
             } catch (\Exception $e) {
-                // Routes may not exist during migrations, ignore errors
+               throw 'error sidebar menu';
             }
         });
     }

@@ -26,6 +26,7 @@ class Department extends Model
         'code',
         'description',
         'head_of_department',
+        'class_room_id',
         'email',
         'phone',
         'office_location',
@@ -97,5 +98,13 @@ class Department extends Model
     public function scopeActive($query)
     {
         return $query->where('status', true);
+    }
+
+    /**
+     * Get the classrooms for the department.
+     */
+    public function classrooms(): HasMany
+    {
+        return $this->hasMany(Classroom::class);
     }
 }

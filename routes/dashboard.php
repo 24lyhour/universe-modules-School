@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Modules\School\Http\Controllers\Dashboard\V1\ClassroomController;
 use Modules\School\Http\Controllers\Dashboard\V1\CourseController;
 use Modules\School\Http\Controllers\Dashboard\V1\DepartmentController;
 use Modules\School\Http\Controllers\Dashboard\V1\ProgramController;
@@ -28,4 +29,9 @@ Route::middleware(['auth', 'verified'])->prefix('dashboard')->group(function () 
     Route::resource('courses', CourseController::class)->names('courses');
     Route::get('courses/{course}/delete', [CourseController::class, 'confirmDelete'])->name('courses.delete');
     Route::put('courses/{course}/toggle-status', [CourseController::class, 'toggleStatus'])->name('courses.toggle-status');
+
+    // Classrooms
+    Route::resource('classrooms', ClassroomController::class)->names('classrooms');
+    Route::get('classrooms/{classroom}/delete', [ClassroomController::class, 'confirmDelete'])->name('classrooms.delete');
+    Route::put('classrooms/{classroom}/toggle-status', [ClassroomController::class, 'toggleStatus'])->name('classrooms.toggle-status');
 });

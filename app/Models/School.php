@@ -105,6 +105,14 @@ class School extends Model
     }
 
     /**
+     * Get the classrooms for the school through departments.
+     */
+    public function classrooms(): HasManyThrough
+    {
+        return $this->hasManyThrough(Classroom::class, Department::class);
+    }
+
+    /**
      * Get the courses through departments.
      */
     public function courses(): HasManyThrough
