@@ -2,6 +2,7 @@
 
 namespace Modules\School\Providers;
 
+use App\Services\MenuService;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Nwidart\Modules\Traits\PathNamespace;
@@ -27,6 +28,37 @@ class SchoolServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->loadMigrationsFrom(module_path($this->name, 'database/migrations'));
+        $this->registerMenuItems();
+    }
+
+    /**
+     * Register menu items for the School module.
+     */
+    protected function registerMenuItems(): void
+    {
+        $this->app->booted(function () {
+            MenuService::addMenuItem(
+                menu: 'primary',
+                id: 'school',
+                title: __('Schools'),
+                url: route('school.schools.index'),
+                icon: 'GraduationCap',
+                order: 40,
+                permissions: null,
+                route: 'school.*'
+            );
+
+            MenuService::addSubmenuItem(
+                'primary',
+                'school',
+                __('All Schools'),
+                route('school.schools.index'),
+                10,
+                null,
+                'school.schools.*',
+                'Building2'
+            );
+        });
     }
 
     /**

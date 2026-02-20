@@ -28,7 +28,7 @@ class Program extends Model
      */
     protected $fillable = [
         'uuid',
-        'institution_id',
+        'school_id',
         'department_id',
         'name',
         'code',
@@ -72,11 +72,11 @@ class Program extends Model
     }
 
     /**
-     * Get the institution that owns the program.
+     * Get the school that owns the program.
      */
-    public function institution(): BelongsTo
+    public function school(): BelongsTo
     {
-        return $this->belongsTo(Institution::class);
+        return $this->belongsTo(School::class);
     }
 
     /**
