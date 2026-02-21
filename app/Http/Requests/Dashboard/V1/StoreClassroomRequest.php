@@ -24,6 +24,8 @@ class StoreClassroomRequest extends FormRequest
             'type' => ['required', 'string', 'in:' . implode(',', array_keys(Classroom::getClassroomTypes()))],
             'equipment' => ['nullable', 'array'],
             'equipment.*' => ['string'],
+            'equipment_ids' => ['nullable', 'array'],
+            'equipment_ids.*' => ['integer', 'exists:school_equipment,id'],
             'description' => ['nullable', 'string', 'max:2000'],
             'has_projector' => ['required', 'boolean'],
             'has_whiteboard' => ['required', 'boolean'],

@@ -9,8 +9,17 @@ class CreateClassroomAction
 {
     public function execute(array $data): Classroom
     {
+        $equipmentIds = $data['equipment_ids'] ?? [];
+        unset($data['equipment_ids']);
+
         $data['uuid'] = (string) Str::uuid();
 
-        return Classroom::create($data);
+        $classroom = Classroom::create($data);
+
+        if (!empty($equipmentIds)) {
+            $classroom->equipmentItems()->sync($equipmentIds);
+        }
+
+        return $classroom;
     }
 }

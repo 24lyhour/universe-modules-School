@@ -43,6 +43,7 @@ const form = useForm<ClassroomFormData>({
     capacity: 30,
     type: 'classroom',
     equipment: [],
+    equipment_ids: [],
     description: '',
     has_projector: false,
     has_whiteboard: true,
@@ -65,6 +66,7 @@ const getFormData = () => ({
     capacity: form.capacity,
     type: form.type,
     equipment: form.equipment,
+    equipment_ids: form.equipment_ids,
     description: form.description || null,
     has_projector: form.has_projector,
     has_whiteboard: form.has_whiteboard,
@@ -134,19 +136,13 @@ const handleTypeChange = (value: string | number | boolean | bigint | Record<str
     }
 };
 
-const handleDepartmentChange = (value: string | number | boolean | bigint | Record<string, unknown> | null | undefined) => {
-    if (typeof value === 'string' || typeof value === 'number') {
-        form.department_id = value;
-    }
-};
-
-const handleEquipmentChange = (equipment: string, checked: boolean | 'indeterminate') => {
+const handleEquipmentChange = (equipmentId: number, checked: boolean | 'indeterminate') => {
     if (checked === true) {
-        if (!form.equipment.includes(equipment)) {
-            form.equipment = [...form.equipment, equipment];
+        if (!form.equipment_ids.includes(equipmentId)) {
+            form.equipment_ids = [...form.equipment_ids, equipmentId];
         }
     } else {
-        form.equipment = form.equipment.filter(e => e !== equipment);
+        form.equipment_ids = form.equipment_ids.filter(id => id !== equipmentId);
     }
 };
 
@@ -161,6 +157,13 @@ const handleWhiteboardChange = (value: boolean | 'indeterminate') => {
 const handleAcChange = (value: boolean | 'indeterminate') => {
     form.has_ac = value === true;
 };
+
+const floorValue = computed({
+    get: () => form.floor ?? undefined,
+    set: (value: string | number | undefined) => {
+        form.floor = typeof value === 'number' ? value : (value ? Number(value) : null);
+    },
+});
 </script>
 
 <template>
@@ -276,7 +279,7 @@ const handleAcChange = (value: boolean | 'indeterminate') => {
                     <Input
                         id="floor"
                         type="number"
-                        v-model.number="form.floor"
+                        v-model.number="floorValue"
                         placeholder="e.g., 1"
                     />
                 </div>
@@ -337,8 +340,8 @@ const handleAcChange = (value: boolean | 'indeterminate') => {
                     <div v-for="equipment in props.equipmentOptions" :key="equipment.value" class="flex items-center space-x-2">
                         <Checkbox
                             :id="`equipment-${equipment.value}`"
-                            :checked="form.equipment.includes(equipment.value)"
-                            @update:checked="(checked) => handleEquipmentChange(equipment.value, checked)"
+                            :checked="form.equipment_ids.includes(equipment.value)"
+                            @update:checked="(checked: boolean | 'indeterminate') => handleEquipmentChange(equipment.value, checked)"
                         />
                         <Label :for="`equipment-${equipment.value}`" class="cursor-pointer font-normal">
                             {{ equipment.label }}

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Modules\School\Http\Controllers\Dashboard\V1\ClassroomController;
 use Modules\School\Http\Controllers\Dashboard\V1\CourseController;
 use Modules\School\Http\Controllers\Dashboard\V1\DepartmentController;
+use Modules\School\Http\Controllers\Dashboard\V1\EquipmentController;
 use Modules\School\Http\Controllers\Dashboard\V1\ProgramController;
 use Modules\School\Http\Controllers\Dashboard\V1\SchoolController;
 
@@ -34,4 +35,8 @@ Route::middleware(['auth', 'verified'])->prefix('dashboard')->group(function () 
     Route::resource('classrooms', ClassroomController::class)->names('classrooms');
     Route::get('classrooms/{classroom}/delete', [ClassroomController::class, 'confirmDelete'])->name('classrooms.delete');
     Route::put('classrooms/{classroom}/toggle-status', [ClassroomController::class, 'toggleStatus'])->name('classrooms.toggle-status');
+
+    // Equipment
+    Route::resource('equipment', EquipmentController::class)->names('equipment');
+    Route::get('equipment/{equipment}/delete', [EquipmentController::class, 'confirmDelete'])->name('equipment.delete');
 });

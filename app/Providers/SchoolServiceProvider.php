@@ -112,6 +112,19 @@ class SchoolServiceProvider extends ServiceProvider
                         'DoorOpen'
                     );
                 }
+
+                if (\Route::has('school.equipment.index')) {
+                    MenuService::addSubmenuItem(
+                        'primary',
+                        'school',
+                        __('Equipment'),
+                        route('school.equipment.index'),
+                        60,
+                        null,
+                        'school.equipment.*',
+                        'Wrench'
+                    );
+                }
             } catch (\Exception $e) {
                throw 'error sidebar menu';
             }

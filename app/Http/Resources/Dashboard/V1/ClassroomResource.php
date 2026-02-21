@@ -22,6 +22,7 @@ class ClassroomResource extends JsonResource
             'type' => $this->type,
             'type_label' => $this->getTypeLabel(),
             'equipment' => $this->equipment ?? [],
+            'equipment_ids' => $this->whenLoaded('equipmentItems', fn () => $this->equipmentItems->pluck('id')->toArray()),
             'description' => $this->description,
             'has_projector' => $this->has_projector,
             'has_whiteboard' => $this->has_whiteboard,

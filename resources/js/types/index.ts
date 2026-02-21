@@ -437,9 +437,10 @@ export interface ProgramDeleteProps {
 
 export type ClassroomType = 'lecture_hall' | 'classroom' | 'lab' | 'seminar' | 'auditorium' | 'workshop';
 
-export interface EquipmentOption {
-    value: string;
+export interface ClassroomEquipmentOption {
+    value: number;
     label: string;
+    category: string;
 }
 
 export interface Classroom {
@@ -454,6 +455,7 @@ export interface Classroom {
     type: ClassroomType;
     type_label: string;
     equipment: string[];
+    equipment_ids: number[];
     description: string | null;
     has_projector: boolean;
     has_whiteboard: boolean;
@@ -507,6 +509,7 @@ export interface ClassroomFormData {
     capacity: number;
     type: ClassroomType;
     equipment: string[];
+    equipment_ids: number[];
     description: string;
     has_projector: boolean;
     has_whiteboard: boolean;
@@ -534,16 +537,86 @@ export interface ClassroomShowProps {
 export interface ClassroomCreateProps {
     types: Record<ClassroomType, string>;
     departments: DepartmentOption[];
-    equipmentOptions: EquipmentOption[];
+    equipmentOptions: ClassroomEquipmentOption[];
 }
 
 export interface ClassroomEditProps {
     classroom: Classroom;
     types: Record<ClassroomType, string>;
     departments: DepartmentOption[];
-    equipmentOptions: EquipmentOption[];
+    equipmentOptions: ClassroomEquipmentOption[];
 }
 
 export interface ClassroomDeleteProps {
     classroom: Classroom;
+}
+
+// Equipment Types
+
+export type EquipmentCategory = 'technology' | 'furniture' | 'safety' | 'accessibility' | 'other';
+
+export interface Equipment {
+    id: number;
+    uuid: string;
+    name: string;
+    slug: string;
+    icon: string | null;
+    description: string | null;
+    category: EquipmentCategory;
+    category_label: string;
+    status: boolean;
+    classrooms_count: number | null;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface EquipmentStats {
+    total: number;
+    active: number;
+    by_category: {
+        technology: number;
+        furniture: number;
+        safety: number;
+        accessibility: number;
+        other: number;
+    };
+}
+
+export interface EquipmentFilters {
+    status?: string;
+    search?: string;
+    category?: string;
+}
+
+export interface EquipmentFormData {
+    name: string;
+    slug: string;
+    icon: string;
+    description: string;
+    category: EquipmentCategory;
+    status: boolean;
+}
+
+export interface EquipmentIndexProps {
+    equipment: PaginatedResponse<Equipment>;
+    filters: EquipmentFilters;
+    stats: EquipmentStats;
+    categories: Record<EquipmentCategory, string>;
+}
+
+export interface EquipmentShowProps {
+    equipment: Equipment;
+}
+
+export interface EquipmentCreateProps {
+    categories: Record<EquipmentCategory, string>;
+}
+
+export interface EquipmentEditProps {
+    equipment: Equipment;
+    categories: Record<EquipmentCategory, string>;
+}
+
+export interface EquipmentDeleteProps {
+    equipment: Equipment;
 }

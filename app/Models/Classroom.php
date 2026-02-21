@@ -5,8 +5,8 @@ namespace Modules\School\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
@@ -110,6 +110,16 @@ class Classroom extends Model
     public function courses(): HasMany
     {
         return $this->hasMany(Course::class);
+    }
+
+    /**
+     * Get the equipment items in this classroom.
+     */
+    public function equipmentItems(): BelongsToMany
+    {
+        return $this->belongsToMany(Equipment::class, 'school_classroom_equipment')
+            ->withPivot(['value', 'quantity', 'notes'])
+            ->withTimestamps();
     }
 
     /**
