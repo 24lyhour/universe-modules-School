@@ -18,6 +18,7 @@ Route::middleware(['auth', 'verified'])->prefix('dashboard')->group(function () 
     Route::resource('departments', DepartmentController::class)->names('departments');
     Route::get('departments/{department}/delete', [DepartmentController::class, 'confirmDelete'])->name('departments.delete');
     Route::put('departments/{department}/toggle-status', [DepartmentController::class, 'toggleStatus'])->name('departments.toggle-status');
+    Route::get('departments/{department}/qr-code', [DepartmentController::class, 'qrCode'])->name('departments.qr-code');
     Route::get('api/departments', [DepartmentController::class, 'getDepartments'])->name('departments.api');
 
     // Programs

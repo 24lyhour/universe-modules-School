@@ -161,4 +161,31 @@ class DepartmentController extends Controller
             'departments' => $departments,
         ]);
     }
+
+    /**
+     * Show QR code page for department attendance.
+     */
+    public function qrCode(Department $department): Response
+    {
+        $department->load('school:id,name');
+
+        $qrData = json_encode([
+            'type' => 'department',
+            'department_id' => $department->id,
+            'department_code' => $department->code,
+            'department_name' => $department->name,
+            'school_name' => $department->school?->name,
+            'scan_type' => 'attendance',
+        ]);
+
+        return Inertia::render('school::Dashboard/V1/Department/QrCode', [
+            'department' => [
+                'id' => $department->id,
+                'name' => $department->name,
+                'code' => $department->code,
+                'school_name' => $department->school?->name,
+            ],
+            'qrData' => $qrData,
+        ]);
+    }
 }

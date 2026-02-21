@@ -18,6 +18,7 @@ import {
     BookOpen,
     GraduationCap,
     User,
+    QrCode,
 } from 'lucide-vue-next';
 import type { BreadcrumbItem } from '@/types';
 import type { DepartmentShowProps } from '@school/types';
@@ -36,6 +37,10 @@ const handleEdit = () => {
 
 const handleDelete = () => {
     router.visit(`/dashboard/departments/${props.department.id}/delete`);
+};
+
+const handleQrCode = () => {
+    router.visit(`/dashboard/departments/${props.department.id}/qr-code`);
 };
 </script>
 
@@ -71,6 +76,10 @@ const handleDelete = () => {
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
+                    <Button variant="outline" @click="handleQrCode">
+                        <QrCode class="mr-2 h-4 w-4" />
+                        Generate QR
+                    </Button>
                     <Button variant="outline" @click="handleEdit">
                         <Pencil class="mr-2 h-4 w-4" />
                         Edit
