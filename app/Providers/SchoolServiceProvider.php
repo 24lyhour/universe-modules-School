@@ -45,7 +45,7 @@ class SchoolServiceProvider extends ServiceProvider
                     url: route('school.schools.index'),
                     icon: 'GraduationCap',
                     order: 40,
-                    permissions: null,
+                    permissions: 'schools.view_any',
                     route: 'school.*'
                 );
 
@@ -55,7 +55,7 @@ class SchoolServiceProvider extends ServiceProvider
                     __('All Schools'),
                     route('school.schools.index'),
                     10,
-                    null,
+                    'schools.view_any',
                     'school.schools.*',
                     'Building2'
                 );
@@ -68,7 +68,7 @@ class SchoolServiceProvider extends ServiceProvider
                         __('Departments'),
                         route('school.departments.index'),
                         20,
-                        null,
+                        'departments.view_any',
                         'school.departments.*',
                         'Layers'
                     );
@@ -81,7 +81,7 @@ class SchoolServiceProvider extends ServiceProvider
                         __('Programs'),
                         route('school.programs.index'),
                         30,
-                        null,
+                        'programs.view_any',
                         'school.programs.*',
                         'BookOpen'
                     );
@@ -94,7 +94,7 @@ class SchoolServiceProvider extends ServiceProvider
                         __('Courses'),
                         route('school.courses.index'),
                         40,
-                        null,
+                        'courses.view_any',
                         'school.courses.*',
                         'FileText'
                     );
@@ -107,7 +107,7 @@ class SchoolServiceProvider extends ServiceProvider
                         __('Classrooms'),
                         route('school.classrooms.index'),
                         50,
-                        null,
+                        'classrooms.view_any',
                         'school.classrooms.*',
                         'DoorOpen'
                     );
@@ -120,13 +120,13 @@ class SchoolServiceProvider extends ServiceProvider
                         __('Equipment'),
                         route('school.equipment.index'),
                         60,
-                        null,
+                        'equipment.view_any',
                         'school.equipment.*',
                         'Wrench'
                     );
                 }
             } catch (\Exception $e) {
-               throw 'error sidebar menu';
+                // Silently handle menu registration errors
             }
         });
     }
