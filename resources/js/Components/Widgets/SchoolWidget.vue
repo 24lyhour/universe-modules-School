@@ -130,8 +130,13 @@ const formatPercent = (num: number) => {
     return `${num.toFixed(1)}%`;
 };
 
-const getStatusBadgeVariant = (status: string): 'default' | 'secondary' | 'destructive' | 'outline' => {
-    switch (status.toLowerCase()) {
+const getStatusBadgeVariant = (status: string | boolean): 'default' | 'secondary' | 'destructive' | 'outline' => {
+    // Handle boolean status (true = active, false = inactive)
+    if (typeof status === 'boolean') {
+        return status ? 'default' : 'secondary';
+    }
+    // Handle string status
+    switch (status?.toLowerCase?.() ?? '') {
         case 'active':
             return 'default';
         case 'inactive':
@@ -139,6 +144,13 @@ const getStatusBadgeVariant = (status: string): 'default' | 'secondary' | 'destr
         default:
             return 'outline';
     }
+};
+
+const formatStatus = (status: string | boolean): string => {
+    if (typeof status === 'boolean') {
+        return status ? 'Active' : 'Inactive';
+    }
+    return status || 'Unknown';
 };
 </script>
 
@@ -360,7 +372,7 @@ const getStatusBadgeVariant = (status: string): 'default' | 'secondary' | 'destr
                         </div>
                         <div class="flex items-center gap-2 shrink-0">
                             <Badge :variant="getStatusBadgeVariant(school.status)">
-                                {{ school.status }}
+                                {{ formatStatus(school.status) }}
                             </Badge>
                             <Link
                                 :href="`/dashboard/schools/${school.id}`"
