@@ -140,4 +140,39 @@ class ClassroomController extends Controller
             ->back()
             ->with('success', "Classroom {$status} successfully.");
     }
+
+    /**
+     * Show QR code page for classroom attendance.
+     */
+    public function qrCode(Classroom $classroom): Response
+    {
+        $classroom->load(['department.school']);
+
+        $qrData = json_encode([
+            'type' => 'classroom',
+            'classroom_id' => $classroom->id,
+            'classroom_code' => $classroom->code,
+            'classroom_name' => $classroom->name,
+            'department_id' => $classroom->department_id,
+            'department_name' => $classroom->department?->name,
+            'school_name' => $classroom->department?->school?->name,
+            'building' => $classroom->building,
+            'floor' => $classroom->floor,
+            'scan_type' => 'attendance',
+        ]);
+
+        return Inertia::render('school::Dashboard/V1/Classroom/QrCode', [
+            'classroom' => [
+                'id' => $classroom->id,
+                'name' => $classroom->name,
+                'code' => $classroom->code,
+                'building' => $classroom->building,
+                'floor' => $classroom->floor,
+                'full_location' => $classroom->full_location,
+                'department_name' => $classroom->department?->name,
+                'school_name' => $classroom->department?->school?->name,
+            ],
+            'qrData' => $qrData,
+        ]);
+    }
 }

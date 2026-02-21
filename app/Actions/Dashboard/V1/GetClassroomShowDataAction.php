@@ -9,13 +9,14 @@ class GetClassroomShowDataAction
 {
     public function execute(Classroom $classroom): array
     {
-        $classroom->load(['school', 'courses']);
-        $classroom->loadCount(['courses']);
+        $classroom->load(['department.school', 'courses', 'equipmentItems']);
+        $classroom->loadCount(['courses', 'equipmentItems']);
 
         return [
             'classroom' => (new ClassroomResource($classroom))->resolve(),
             'stats' => [
                 'courses_count' => $classroom->courses_count,
+                'equipment_count' => $classroom->equipment_items_count,
                 'capacity' => $classroom->capacity,
             ],
         ];

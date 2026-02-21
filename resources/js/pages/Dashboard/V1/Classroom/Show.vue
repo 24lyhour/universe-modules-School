@@ -19,6 +19,8 @@ import {
     ClipboardList,
     CheckCircle,
     XCircle,
+    Package,
+    QrCode,
 } from 'lucide-vue-next';
 import type { BreadcrumbItem } from '@/types';
 import type { ClassroomShowProps } from '@school/types';
@@ -37,6 +39,10 @@ const handleEdit = () => {
 
 const handleDelete = () => {
     router.visit(`/dashboard/classrooms/${props.classroom.id}/delete`);
+};
+
+const handleQrCode = () => {
+    router.visit(`/dashboard/classrooms/${props.classroom.id}/qr-code`);
 };
 </script>
 
@@ -73,6 +79,10 @@ const handleDelete = () => {
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
+                    <Button variant="outline" @click="handleQrCode">
+                        <QrCode class="mr-2 h-4 w-4" />
+                        Generate QR
+                    </Button>
                     <Button variant="outline" @click="handleEdit">
                         <Pencil class="mr-2 h-4 w-4" />
                         Edit
@@ -85,7 +95,7 @@ const handleDelete = () => {
             </div>
 
             <!-- Stats -->
-            <div class="grid gap-4 md:grid-cols-4">
+            <div class="grid gap-4 md:grid-cols-5">
                 <StatsCard
                     title="Capacity"
                     :value="stats.capacity"
@@ -95,6 +105,11 @@ const handleDelete = () => {
                     title="Courses"
                     :value="stats.courses_count"
                     :icon="BookOpen"
+                />
+                <StatsCard
+                    title="Equipment"
+                    :value="stats.equipment_count"
+                    :icon="Package"
                 />
                 <StatsCard
                     title="Floor"
@@ -171,7 +186,40 @@ const handleDelete = () => {
                         </CardContent>
                     </Card>
 
-                    <!-- Equipment -->
+                    <!-- Equipment Items -->
+                    <Card v-if="classroom.equipment_items && classroom.equipment_items.length > 0">
+                        <CardHeader class="pb-3">
+                            <CardTitle class="text-base flex items-center gap-2">
+                                <Package class="h-4 w-4" />
+                                Equipment ({{ classroom.equipment_items.length }})
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div class="space-y-3">
+                                <div
+                                    v-for="item in classroom.equipment_items"
+                                    :key="item.id"
+                                    class="flex items-center justify-between rounded-lg border p-3"
+                                >
+                                    <div class="flex items-center gap-3">
+                                        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-muted">
+                                            <Package class="h-4 w-4 text-muted-foreground" />
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-medium">{{ item.name }}</p>
+                                            <p v-if="item.notes" class="text-xs text-muted-foreground">{{ item.notes }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <Badge variant="secondary">Qty: {{ item.quantity }}</Badge>
+                                        <p v-if="item.value" class="text-xs text-muted-foreground mt-1">{{ item.value }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <!-- Legacy Equipment (string array) -->
                     <Card v-if="classroom.equipment && classroom.equipment.length > 0">
                         <CardHeader class="pb-3">
                             <CardTitle class="text-base">Additional Equipment</CardTitle>

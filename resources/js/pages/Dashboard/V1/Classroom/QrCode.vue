@@ -3,16 +3,20 @@ import { Head, router } from '@inertiajs/vue3';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ArrowLeft, Printer, Download, FileDown, QrCode as QrCodeIcon } from 'lucide-vue-next';
+import { ArrowLeft, Printer, Download, FileDown, QrCode as QrCodeIcon, DoorOpen } from 'lucide-vue-next';
 import type { BreadcrumbItem } from '@/types';
 import { onMounted, ref } from 'vue';
 import QRCode from 'qrcode';
 
 interface Props {
-    department: {
+    classroom: {
         id: number;
         name: string;
         code: string | null;
+        building: string | null;
+        floor: number | null;
+        full_location: string | null;
+        department_name: string | null;
         school_name: string | null;
     };
     qrData: string;
@@ -22,9 +26,9 @@ const props = defineProps<Props>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
-    { title: 'Departments', href: '/dashboard/departments' },
-    { title: props.department.name, href: `/dashboard/departments/${props.department.id}` },
-    { title: 'QR Code', href: `/dashboard/departments/${props.department.id}/qr-code` },
+    { title: 'Classrooms', href: '/dashboard/classrooms' },
+    { title: props.classroom.name, href: `/dashboard/classrooms/${props.classroom.id}` },
+    { title: 'QR Code', href: `/dashboard/classrooms/${props.classroom.id}/qr-code` },
 ];
 
 const qrCodeDataUrl = ref<string>('');
@@ -54,7 +58,7 @@ onMounted(async () => {
 });
 
 const handleBack = () => {
-    router.visit(`/dashboard/departments/${props.department.id}`);
+    router.visit(`/dashboard/classrooms/${props.classroom.id}`);
 };
 
 const handlePrint = () => {
@@ -65,7 +69,7 @@ const handlePrint = () => {
             <!DOCTYPE html>
             <html>
             <head>
-                <title>QR Code - ${props.department.name}</title>
+                <title>QR Code - ${props.classroom.name}</title>
                 <style>
                     body {
                         font-family: Arial, sans-serif;
@@ -87,10 +91,15 @@ const handlePrint = () => {
                     .title {
                         font-size: 24px;
                         font-weight: bold;
-                        margin-bottom: 10px;
+                        margin-bottom: 5px;
+                    }
+                    .location {
+                        font-size: 16px;
+                        color: #333;
+                        margin-bottom: 5px;
                     }
                     .subtitle {
-                        font-size: 16px;
+                        font-size: 14px;
                         color: #666;
                         margin-bottom: 20px;
                     }
@@ -122,13 +131,14 @@ const handlePrint = () => {
             </head>
             <body>
                 <div class="container">
-                    <div class="title">${props.department.name}</div>
-                    <div class="subtitle">${props.department.school_name || ''}</div>
+                    <div class="title">${props.classroom.name}</div>
+                    <div class="location">${props.classroom.full_location || ''}</div>
+                    <div class="subtitle">${props.classroom.department_name || ''} - ${props.classroom.school_name || ''}</div>
                     <div class="qr-code">${qrCodeSvg.value}</div>
                     <div class="instruction">
                         Scan this QR code to record your attendance
                     </div>
-                    <div class="code">Code: ${props.department.code || 'N/A'}</div>
+                    <div class="code">Room Code: ${props.classroom.code || 'N/A'}</div>
                 </div>
                 ${scriptTag}
             </body>
@@ -142,7 +152,7 @@ const handleDownload = () => {
     if (!qrCodeDataUrl.value) return;
 
     const link = document.createElement('a');
-    link.download = `qr-code-${props.department.code || props.department.id}.png`;
+    link.download = `qr-code-classroom-${props.classroom.code || props.classroom.id}.png`;
     link.href = qrCodeDataUrl.value;
     link.click();
 };
@@ -154,7 +164,7 @@ const handleExportPdf = () => {
             <!DOCTYPE html>
             <html>
             <head>
-                <title>QR Code - ${props.department.name}</title>
+                <title>QR Code - ${props.classroom.name}</title>
                 <style>
                     @page {
                         size: A4;
@@ -181,10 +191,15 @@ const handleExportPdf = () => {
                     .title {
                         font-size: 28px;
                         font-weight: bold;
-                        margin-bottom: 10px;
+                        margin-bottom: 5px;
+                    }
+                    .location {
+                        font-size: 18px;
+                        color: #333;
+                        margin-bottom: 5px;
                     }
                     .subtitle {
-                        font-size: 18px;
+                        font-size: 16px;
                         color: #666;
                         margin-bottom: 25px;
                     }
@@ -217,15 +232,16 @@ const handleExportPdf = () => {
             </head>
             <body>
                 <div class="container">
-                    <div class="title">${props.department.name}</div>
-                    <div class="subtitle">${props.department.school_name || ''}</div>
+                    <div class="title">${props.classroom.name}</div>
+                    <div class="location">${props.classroom.full_location || ''}</div>
+                    <div class="subtitle">${props.classroom.department_name || ''} - ${props.classroom.school_name || ''}</div>
                     <div class="qr-code">
                         <img src="${qrCodeDataUrl.value}" alt="QR Code" />
                     </div>
                     <div class="instruction">
                         Scan this QR code to record your attendance
                     </div>
-                    <div class="code">Department Code: ${props.department.code || 'N/A'}</div>
+                    <div class="code">Room Code: ${props.classroom.code || 'N/A'}</div>
                     <div class="footer">Generated on ${new Date().toLocaleDateString()}</div>
                 </div>
             </body>
@@ -243,7 +259,7 @@ const handleExportPdf = () => {
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbs">
-        <Head :title="`QR Code - ${department.name}`" />
+        <Head :title="`QR Code - ${classroom.name}`" />
 
         <div class="flex h-full flex-1 flex-col gap-6 p-6">
             <!-- Header -->
@@ -253,9 +269,9 @@ const handleExportPdf = () => {
                         <ArrowLeft class="h-4 w-4" />
                     </Button>
                     <div>
-                        <h1 class="text-2xl font-bold">Department QR Code</h1>
+                        <h1 class="text-2xl font-bold">Classroom QR Code</h1>
                         <p class="text-sm text-muted-foreground">
-                            Print and place at department entrance for attendance tracking
+                            Print and place inside classroom for attendance tracking
                         </p>
                     </div>
                 </div>
@@ -280,11 +296,14 @@ const handleExportPdf = () => {
                 <Card class="w-full max-w-md">
                     <CardHeader class="text-center">
                         <CardTitle class="flex items-center justify-center gap-2">
-                            <QrCodeIcon class="h-5 w-5" />
-                            {{ department.name }}
+                            <DoorOpen class="h-5 w-5" />
+                            {{ classroom.name }}
                         </CardTitle>
-                        <CardDescription v-if="department.school_name">
-                            {{ department.school_name }}
+                        <CardDescription v-if="classroom.full_location">
+                            {{ classroom.full_location }}
+                        </CardDescription>
+                        <CardDescription v-if="classroom.department_name || classroom.school_name">
+                            {{ classroom.department_name }} - {{ classroom.school_name }}
                         </CardDescription>
                     </CardHeader>
                     <CardContent class="flex flex-col items-center space-y-4">
@@ -293,7 +312,7 @@ const handleExportPdf = () => {
                             <img
                                 v-if="qrCodeDataUrl"
                                 :src="qrCodeDataUrl"
-                                :alt="`QR Code for ${department.name}`"
+                                :alt="`QR Code for ${classroom.name}`"
                                 class="h-64 w-64"
                             />
                             <div v-else class="flex h-64 w-64 items-center justify-center">
@@ -306,16 +325,17 @@ const handleExportPdf = () => {
                             <p class="text-sm font-medium">How to use:</p>
                             <ol class="mt-2 text-sm text-muted-foreground text-left list-decimal list-inside space-y-1">
                                 <li>Print this QR code</li>
-                                <li>Place at department entrance</li>
-                                <li>Employees scan to check-in/out</li>
+                                <li>Place inside the classroom (near entrance)</li>
+                                <li>Students/employees scan when entering</li>
                                 <li>Attendance is automatically recorded</li>
                             </ol>
                         </div>
 
-                        <!-- Department Info -->
+                        <!-- Classroom Info -->
                         <div class="text-center text-sm text-muted-foreground">
-                            <p v-if="department.code">Code: {{ department.code }}</p>
-                            <p>ID: {{ department.id }}</p>
+                            <p v-if="classroom.code">Room Code: {{ classroom.code }}</p>
+                            <p v-if="classroom.building">Building: {{ classroom.building }}</p>
+                            <p v-if="classroom.floor">Floor: {{ classroom.floor }}</p>
                         </div>
                     </CardContent>
                 </Card>

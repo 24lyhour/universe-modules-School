@@ -443,6 +443,14 @@ export interface ClassroomEquipmentOption {
     category: string;
 }
 
+export interface ClassroomEquipmentItem {
+    id: number;
+    name: string;
+    quantity: number;
+    value: string | null;
+    notes: string | null;
+}
+
 export interface Classroom {
     id: number;
     uuid: string;
@@ -466,6 +474,8 @@ export interface Classroom {
     school_name: string | null;
     full_location: string | null;
     courses_count: number | null;
+    equipment_items_count: number | null;
+    equipment_items: ClassroomEquipmentItem[] | null;
     department?: {
         id: number;
         name: string;
@@ -531,6 +541,7 @@ export interface ClassroomShowProps {
     stats: {
         capacity: number;
         courses_count: number;
+        equipment_count: number;
     };
 }
 

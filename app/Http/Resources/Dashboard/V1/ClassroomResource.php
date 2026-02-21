@@ -42,6 +42,14 @@ class ClassroomResource extends JsonResource
                 ] : null,
             ]),
             'courses_count' => $this->whenCounted('courses'),
+            'equipment_items_count' => $this->whenCounted('equipmentItems'),
+            'equipment_items' => $this->whenLoaded('equipmentItems', fn () => $this->equipmentItems->map(fn ($item) => [
+                'id' => $item->id,
+                'name' => $item->name,
+                'quantity' => $item->pivot->quantity ?? 1,
+                'value' => $item->pivot->value ?? null,
+                'notes' => $item->pivot->notes ?? null,
+            ])),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
         ];

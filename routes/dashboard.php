@@ -36,6 +36,7 @@ Route::middleware(['auth', 'verified'])->prefix('dashboard')->group(function () 
     Route::resource('classrooms', ClassroomController::class)->names('classrooms');
     Route::get('classrooms/{classroom}/delete', [ClassroomController::class, 'confirmDelete'])->name('classrooms.delete');
     Route::put('classrooms/{classroom}/toggle-status', [ClassroomController::class, 'toggleStatus'])->name('classrooms.toggle-status');
+    Route::get('classrooms/{classroom}/qr-code', [ClassroomController::class, 'qrCode'])->name('classrooms.qr-code');
 
     // Equipment
     Route::resource('equipment', EquipmentController::class)->names('equipment');
