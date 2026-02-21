@@ -2,10 +2,13 @@
 
 namespace Modules\School\Models;
 
+use App\Models\User;
+use App\Traits\IsTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use Modules\Employee\Models\Employee;
@@ -13,7 +16,7 @@ use Modules\Employee\Models\EmployeeType;
 
 class School extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, IsTenant;
 
     protected $table = 'schools';
 
@@ -139,5 +142,21 @@ class School extends Model
     public function scopeActive($query)
     {
         return $query->where('status', true);
+    }
+
+    /**
+     * Get users belonging to this school (as tenant).
+     */
+    public function users(): MorphMany
+    {
+        return $this->morphMany(User::class, 'tenant');
+    }
+
+    /**
+     * Get the tenant identifier for display.
+     */
+    public function getTenantIdentifierAttribute(): string
+    {
+        return $this->code ?? $this->name;
     }
 }
