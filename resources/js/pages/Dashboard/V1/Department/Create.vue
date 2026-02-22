@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/select';
 import { departmentSchema } from '@school/validation/departmentSchema';
 import { useFormValidation } from '@/composables/useFormValidation';
-import type { DepartmentFormData, DepartmentCreateProps, SchoolOption } from '@school/types';
+import type { DepartmentFormData, DepartmentCreateProps } from '@school/types';
 
 const props = defineProps<DepartmentCreateProps>();
 
@@ -46,6 +46,25 @@ const form = useForm<DepartmentFormData>({
     total_staff: null,
     total_students: null,
     status: true,
+});
+
+// Auto-generate code from name
+const generateCode = (name: string): string => {
+    if (!name) return '';
+    // Take first 4 letters uppercase + random 3 digits
+    const prefix = name
+        .replace(/[^a-zA-Z]/g, '')
+        .substring(0, 4)
+        .toUpperCase();
+    const suffix = Math.floor(100 + Math.random() * 900).toString();
+    return `${prefix}-${suffix}`;
+};
+
+// Watch name and auto-generate code if code is empty
+watch(() => form.name, (newName) => {
+    if (newName && !form.code) {
+        form.code = generateCode(newName);
+    }
 });
 
 const { validateForm, validateAndSubmit, createIsFormInvalid } = useFormValidation(
