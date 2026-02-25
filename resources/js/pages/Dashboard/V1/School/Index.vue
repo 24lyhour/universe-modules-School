@@ -220,7 +220,11 @@ const typeOptions = computed(() => {
                 >
                     <template #cell-name="{ item }">
                         <div class="flex items-center gap-3">
-                            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                            <!-- Logo or fallback icon -->
+                            <div v-if="item.logo" class="h-10 w-10 rounded-lg overflow-hidden border">
+                                <img :src="item.logo" :alt="item.name" class="h-full w-full object-cover" />
+                            </div>
+                            <div v-else class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
                                 <Building2 class="h-5 w-5 text-primary" />
                             </div>
                             <div>

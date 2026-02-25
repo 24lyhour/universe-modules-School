@@ -11,6 +11,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { ImageUpload } from '@/components/shared';
 import type { InertiaForm } from '@inertiajs/vue3';
 import type { SchoolFormData, SchoolType } from '@school/types';
 
@@ -53,6 +54,14 @@ const establishedYearValue = computed({
     get: () => model.value.established_year ?? undefined,
     set: (val: string | number | undefined | null) => {
         model.value.established_year = val ? Number(val) : null;
+    }
+});
+
+// Logo - convert string to array for ImageUpload component
+const logoImages = computed({
+    get: () => model.value.logo ? [model.value.logo] : [],
+    set: (val: string[]) => {
+        model.value.logo = val.length > 0 ? val[0] : '';
     }
 });
 </script>
@@ -122,6 +131,16 @@ const establishedYearValue = computed({
                 {{ model.errors.description }}
             </p>
         </div>
+
+        <!-- Logo -->
+        <ImageUpload
+            v-model="logoImages"
+            label="Logo"
+            :multiple="false"
+            :max-files="1"
+            :max-size="5"
+            :error="model.errors.logo"
+        />
 
         <!-- Contact Info -->
         <div class="grid gap-4 sm:grid-cols-2">

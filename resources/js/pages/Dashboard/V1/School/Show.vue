@@ -52,7 +52,11 @@ const handleDelete = () => {
                         <ChevronLeft class="h-5 w-5" />
                     </Link>
                     <div class="flex items-center gap-4">
-                        <div class="flex h-16 w-16 items-center justify-center rounded-xl bg-primary/10">
+                        <!-- Logo or fallback icon -->
+                        <div v-if="school.logo" class="h-16 w-16 rounded-xl overflow-hidden border">
+                            <img :src="school.logo" :alt="school.name" class="h-full w-full object-cover" />
+                        </div>
+                        <div v-else class="flex h-16 w-16 items-center justify-center rounded-xl bg-primary/10">
                             <Building2 class="h-8 w-8 text-primary" />
                         </div>
                         <div>
