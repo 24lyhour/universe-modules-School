@@ -35,7 +35,7 @@ const isFormInvalid = computed(() => {
 });
 
 const handleSubmit = () => {
-    form.put(`/dashboard/equipment/${props.equipment.id}`, {
+    form.put(`/dashboard/equipment/${props.equipment.uuid}`, {
         onSuccess: () => {
             toast.success('Equipment updated successfully.');
             setTimeout(() => {

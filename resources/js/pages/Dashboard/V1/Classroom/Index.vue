@@ -68,17 +68,17 @@ const actions: TableAction<Classroom>[] = [
     {
         label: 'View',
         icon: Eye,
-        onClick: (classroom) => router.visit(`/dashboard/classrooms/${classroom.id}`),
+        onClick: (classroom) => router.visit(`/dashboard/classrooms/${classroom.uuid}`),
     },
     {
         label: 'Edit',
         icon: Pencil,
-        onClick: (classroom) => router.visit(`/dashboard/classrooms/${classroom.id}/edit`),
+        onClick: (classroom) => router.visit(`/dashboard/classrooms/${classroom.uuid}/edit`),
     },
     {
         label: 'Delete',
         icon: Trash2,
-        onClick: (classroom) => router.visit(`/dashboard/classrooms/${classroom.id}/delete`),
+        onClick: (classroom) => router.visit(`/dashboard/classrooms/${classroom.uuid}/delete`),
         variant: 'destructive',
         separator: true,
     },
@@ -145,7 +145,7 @@ const handleDownloadTemplate = () => {
 };
 
 const handleStatusToggle = (classroom: Classroom, newStatus: boolean) => {
-    router.put(`/dashboard/classrooms/${classroom.id}/toggle-status`, {
+    router.put(`/dashboard/classrooms/${classroom.uuid}/toggle-status`, {
         status: newStatus,
     }, {
         preserveState: true,

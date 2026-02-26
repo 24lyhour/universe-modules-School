@@ -108,4 +108,12 @@ class Department extends Model
     {
         return $this->hasMany(Classroom::class);
     }
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
 }

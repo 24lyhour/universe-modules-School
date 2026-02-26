@@ -120,4 +120,12 @@ class Program extends Model
     {
         return $query->where('status', true);
     }
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
 }

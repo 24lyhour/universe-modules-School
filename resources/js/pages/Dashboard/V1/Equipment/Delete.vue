@@ -24,7 +24,7 @@ const isOpen = computed({
 const handleConfirm = () => {
     isDeleting.value = true;
 
-    router.delete(`/dashboard/equipment/${props.equipment.id}`, {
+    router.delete(`/dashboard/equipment/${props.equipment.uuid}`, {
         onSuccess: () => {
             toast.success('Equipment deleted successfully.');
             close();

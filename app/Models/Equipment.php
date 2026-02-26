@@ -115,4 +115,12 @@ class Equipment extends Model
     {
         return $query->where('category', $category);
     }
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
 }

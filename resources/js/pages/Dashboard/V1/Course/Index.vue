@@ -69,17 +69,17 @@ const actions: TableAction<Course>[] = [
     {
         label: 'View',
         icon: Eye,
-        onClick: (course) => router.visit(`/dashboard/courses/${course.id}`),
+        onClick: (course) => router.visit(`/dashboard/courses/${course.uuid}`),
     },
     {
         label: 'Edit',
         icon: Pencil,
-        onClick: (course) => router.visit(`/dashboard/courses/${course.id}/edit`),
+        onClick: (course) => router.visit(`/dashboard/courses/${course.uuid}/edit`),
     },
     {
         label: 'Delete',
         icon: Trash2,
-        onClick: (course) => router.visit(`/dashboard/courses/${course.id}/delete`),
+        onClick: (course) => router.visit(`/dashboard/courses/${course.uuid}/delete`),
         variant: 'destructive',
         separator: true,
     },
@@ -147,7 +147,7 @@ const handleDownloadTemplate = () => {
 };
 
 const handleStatusToggle = (course: Course, newStatus: boolean) => {
-    router.put(`/dashboard/courses/${course.id}/toggle-status`, {
+    router.put(`/dashboard/courses/${course.uuid}/toggle-status`, {
         status: newStatus,
     }, {
         preserveState: true,

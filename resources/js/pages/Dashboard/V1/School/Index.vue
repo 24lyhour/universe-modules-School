@@ -62,17 +62,17 @@ const actions: TableAction<School>[] = [
     {
         label: 'View',
         icon: Eye,
-        onClick: (school) => router.visit(`/dashboard/schools/${school.id}`),
+        onClick: (school) => router.visit(`/dashboard/schools/${school.uuid}`),
     },
     {
         label: 'Edit',
         icon: Pencil,
-        onClick: (school) => router.visit(`/dashboard/schools/${school.id}/edit`),
+        onClick: (school) => router.visit(`/dashboard/schools/${school.uuid}/edit`),
     },
     {
         label: 'Delete',
         icon: Trash2,
-        onClick: (school) => router.visit(`/dashboard/schools/${school.id}/delete`),
+        onClick: (school) => router.visit(`/dashboard/schools/${school.uuid}/delete`),
         variant: 'destructive',
         separator: true,
     },
@@ -119,7 +119,7 @@ const handleCreate = () => {
 };
 
 const handleStatusToggle = (school: School, newStatus: boolean) => {
-    router.put(`/dashboard/schools/${school.id}/toggle-status`, {
+    router.put(`/dashboard/schools/${school.uuid}/toggle-status`, {
         status: newStatus,
     }, {
         preserveState: true,

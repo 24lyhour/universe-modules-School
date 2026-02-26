@@ -63,17 +63,17 @@ const actions: TableAction<Program>[] = [
     {
         label: 'View',
         icon: Eye,
-        onClick: (program) => router.visit(`/dashboard/programs/${program.id}`),
+        onClick: (program) => router.visit(`/dashboard/programs/${program.uuid}`),
     },
     {
         label: 'Edit',
         icon: Pencil,
-        onClick: (program) => router.visit(`/dashboard/programs/${program.id}/edit`),
+        onClick: (program) => router.visit(`/dashboard/programs/${program.uuid}/edit`),
     },
     {
         label: 'Delete',
         icon: Trash2,
-        onClick: (program) => router.visit(`/dashboard/programs/${program.id}/delete`),
+        onClick: (program) => router.visit(`/dashboard/programs/${program.uuid}/delete`),
         variant: 'destructive',
         separator: true,
     },
@@ -140,7 +140,7 @@ const handleDownloadTemplate = () => {
 };
 
 const handleStatusToggle = (program: Program, newStatus: boolean) => {
-    router.put(`/dashboard/programs/${program.id}/toggle-status`, {
+    router.put(`/dashboard/programs/${program.uuid}/toggle-status`, {
         status: newStatus,
     }, {
         preserveState: true,

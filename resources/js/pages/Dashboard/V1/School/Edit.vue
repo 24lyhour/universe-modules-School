@@ -68,7 +68,7 @@ const isFormInvalid = createIsFormInvalid(getFormData);
 
 const handleSubmit = () => {
     validateAndSubmit(getFormData(), form, () => {
-        form.put(`/dashboard/schools/${props.school.id}`, {
+        form.put(`/dashboard/schools/${props.school.uuid}`, {
             onSuccess: () => {
                 toast.success('School updated successfully.');
                 setTimeout(() => {

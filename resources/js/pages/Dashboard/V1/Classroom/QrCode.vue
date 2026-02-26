@@ -11,6 +11,7 @@ import QRCode from 'qrcode';
 interface Props {
     classroom: {
         id: number;
+        uuid: string;
         name: string;
         code: string | null;
         building: string | null;
@@ -27,8 +28,8 @@ const props = defineProps<Props>();
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
     { title: 'Classrooms', href: '/dashboard/classrooms' },
-    { title: props.classroom.name, href: `/dashboard/classrooms/${props.classroom.id}` },
-    { title: 'QR Code', href: `/dashboard/classrooms/${props.classroom.id}/qr-code` },
+    { title: props.classroom.name, href: `/dashboard/classrooms/${props.classroom.uuid}` },
+    { title: 'QR Code', href: `/dashboard/classrooms/${props.classroom.uuid}/qr-code` },
 ];
 
 const qrCodeDataUrl = ref<string>('');
@@ -58,7 +59,7 @@ onMounted(async () => {
 });
 
 const handleBack = () => {
-    router.visit(`/dashboard/classrooms/${props.classroom.id}`);
+    router.visit(`/dashboard/classrooms/${props.classroom.uuid}`);
 };
 
 const handlePrint = () => {
@@ -152,7 +153,7 @@ const handleDownload = () => {
     if (!qrCodeDataUrl.value) return;
 
     const link = document.createElement('a');
-    link.download = `qr-code-classroom-${props.classroom.code || props.classroom.id}.png`;
+    link.download = `qr-code-classroom-${props.classroom.code || props.classroom.uuid}.png`;
     link.href = qrCodeDataUrl.value;
     link.click();
 };

@@ -30,19 +30,19 @@ const props = defineProps<ClassroomShowProps>();
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
     { title: 'Classrooms', href: '/dashboard/classrooms' },
-    { title: props.classroom.name, href: `/dashboard/classrooms/${props.classroom.id}` },
+    { title: props.classroom.name, href: `/dashboard/classrooms/${props.classroom.uuid}` },
 ];
 
 const handleEdit = () => {
-    router.visit(`/dashboard/classrooms/${props.classroom.id}/edit`);
+    router.visit(`/dashboard/classrooms/${props.classroom.uuid}/edit`);
 };
 
 const handleDelete = () => {
-    router.visit(`/dashboard/classrooms/${props.classroom.id}/delete`);
+    router.visit(`/dashboard/classrooms/${props.classroom.uuid}/delete`);
 };
 
 const handleQrCode = () => {
-    router.visit(`/dashboard/classrooms/${props.classroom.id}/qr-code`);
+    router.visit(`/dashboard/classrooms/${props.classroom.uuid}/qr-code`);
 };
 </script>
 

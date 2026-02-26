@@ -70,7 +70,7 @@ const isFormInvalid = createIsFormInvalid(getFormData);
 
 const handleSubmit = () => {
     validateAndSubmit(getFormData(), form, () => {
-        form.put(`/dashboard/classrooms/${props.classroom.id}`, {
+        form.put(`/dashboard/classrooms/${props.classroom.uuid}`, {
             onSuccess: () => {
                 toast.success('Classroom updated successfully.');
                 setTimeout(() => {

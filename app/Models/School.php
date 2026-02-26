@@ -159,4 +159,12 @@ class School extends Model
     {
         return $this->code ?? $this->name;
     }
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
 }

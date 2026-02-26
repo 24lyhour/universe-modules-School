@@ -26,15 +26,15 @@ const props = defineProps<CourseShowProps>();
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
     { title: 'Courses', href: '/dashboard/courses' },
-    { title: props.course.name, href: `/dashboard/courses/${props.course.id}` },
+    { title: props.course.name, href: `/dashboard/courses/${props.course.uuid}` },
 ];
 
 const handleEdit = () => {
-    router.visit(`/dashboard/courses/${props.course.id}/edit`);
+    router.visit(`/dashboard/courses/${props.course.uuid}/edit`);
 };
 
 const handleDelete = () => {
-    router.visit(`/dashboard/courses/${props.course.id}/delete`);
+    router.visit(`/dashboard/courses/${props.course.uuid}/delete`);
 };
 </script>
 

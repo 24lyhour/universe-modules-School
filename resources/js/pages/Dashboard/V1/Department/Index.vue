@@ -62,17 +62,17 @@ const actions: TableAction<Department>[] = [
     {
         label: 'View',
         icon: Eye,
-        onClick: (department) => router.visit(`/dashboard/departments/${department.id}`),
+        onClick: (department) => router.visit(`/dashboard/departments/${department.uuid}`),
     },
     {
         label: 'Edit',
         icon: Pencil,
-        onClick: (department) => router.visit(`/dashboard/departments/${department.id}/edit`),
+        onClick: (department) => router.visit(`/dashboard/departments/${department.uuid}/edit`),
     },
     {
         label: 'Delete',
         icon: Trash2,
-        onClick: (department) => router.visit(`/dashboard/departments/${department.id}/delete`),
+        onClick: (department) => router.visit(`/dashboard/departments/${department.uuid}/delete`),
         variant: 'destructive',
         separator: true,
     },
@@ -138,7 +138,7 @@ const handleDownloadTemplate = () => {
 };
 
 const handleStatusToggle = (department: Department, newStatus: boolean) => {
-    router.put(`/dashboard/departments/${department.id}/toggle-status`, {
+    router.put(`/dashboard/departments/${department.uuid}/toggle-status`, {
         status: newStatus,
     }, {
         preserveState: true,

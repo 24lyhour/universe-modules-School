@@ -134,4 +134,12 @@ class Course extends Model
     {
         return $this->current_enrollment < $this->max_students;
     }
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
 }

@@ -28,19 +28,19 @@ const props = defineProps<DepartmentShowProps>();
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
     { title: 'Departments', href: '/dashboard/departments' },
-    { title: props.department.name, href: `/dashboard/departments/${props.department.id}` },
+    { title: props.department.name, href: `/dashboard/departments/${props.department.uuid}` },
 ];
 
 const handleEdit = () => {
-    router.visit(`/dashboard/departments/${props.department.id}/edit`);
+    router.visit(`/dashboard/departments/${props.department.uuid}/edit`);
 };
 
 const handleDelete = () => {
-    router.visit(`/dashboard/departments/${props.department.id}/delete`);
+    router.visit(`/dashboard/departments/${props.department.uuid}/delete`);
 };
 
 const handleQrCode = () => {
-    router.visit(`/dashboard/departments/${props.department.id}/qr-code`);
+    router.visit(`/dashboard/departments/${props.department.uuid}/qr-code`);
 };
 </script>
 
@@ -248,7 +248,7 @@ const handleQrCode = () => {
                         </CardHeader>
                         <CardContent>
                             <Link
-                                :href="`/dashboard/schools/${department.school.id}`"
+                                :href="`/dashboard/schools/${department.school.uuid}`"
                                 class="flex items-center gap-3 rounded-lg border p-3 hover:bg-muted/50 transition-colors"
                             >
                                 <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">

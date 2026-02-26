@@ -27,15 +27,15 @@ const props = defineProps<ProgramShowProps>();
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
     { title: 'Programs', href: '/dashboard/programs' },
-    { title: props.program.name, href: `/dashboard/programs/${props.program.id}` },
+    { title: props.program.name, href: `/dashboard/programs/${props.program.uuid}` },
 ];
 
 const handleEdit = () => {
-    router.visit(`/dashboard/programs/${props.program.id}/edit`);
+    router.visit(`/dashboard/programs/${props.program.uuid}/edit`);
 };
 
 const handleDelete = () => {
-    router.visit(`/dashboard/programs/${props.program.id}/delete`);
+    router.visit(`/dashboard/programs/${props.program.uuid}/delete`);
 };
 
 const formatCurrency = (value: number | string | null) => {

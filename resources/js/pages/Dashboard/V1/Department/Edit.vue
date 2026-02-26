@@ -64,7 +64,7 @@ const isFormInvalid = createIsFormInvalid(getFormData);
 
 const handleSubmit = () => {
     validateAndSubmit(getFormData(), form, () => {
-        form.put(`/dashboard/departments/${props.department.id}`, {
+        form.put(`/dashboard/departments/${props.department.uuid}`, {
             onSuccess: () => {
                 toast.success('Department updated successfully.');
                 setTimeout(() => {

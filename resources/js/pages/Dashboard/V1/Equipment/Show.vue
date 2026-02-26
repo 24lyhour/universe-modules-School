@@ -13,7 +13,7 @@ const props = defineProps<EquipmentShowProps>();
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
     { title: 'Equipment', href: '/dashboard/equipment' },
-    { title: props.equipment.name, href: `/dashboard/equipment/${props.equipment.id}` },
+    { title: props.equipment.name, href: `/dashboard/equipment/${props.equipment.uuid}` },
 ];
 
 const handleBack = () => {
@@ -21,11 +21,11 @@ const handleBack = () => {
 };
 
 const handleEdit = () => {
-    router.visit(`/dashboard/equipment/${props.equipment.id}/edit`);
+    router.visit(`/dashboard/equipment/${props.equipment.uuid}/edit`);
 };
 
 const handleDelete = () => {
-    router.visit(`/dashboard/equipment/${props.equipment.id}/delete`);
+    router.visit(`/dashboard/equipment/${props.equipment.uuid}/delete`);
 };
 
 const getCategoryIcon = (category: string) => {

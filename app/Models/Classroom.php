@@ -207,4 +207,12 @@ class Classroom extends Model
 
         return implode(', ', $parts);
     }
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
 }

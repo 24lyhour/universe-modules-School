@@ -56,17 +56,17 @@ const actions: TableAction<Equipment>[] = [
     {
         label: 'View',
         icon: Eye,
-        onClick: (equipment) => router.visit(`/dashboard/equipment/${equipment.id}`),
+        onClick: (equipment) => router.visit(`/dashboard/equipment/${equipment.uuid}`),
     },
     {
         label: 'Edit',
         icon: Pencil,
-        onClick: (equipment) => router.visit(`/dashboard/equipment/${equipment.id}/edit`),
+        onClick: (equipment) => router.visit(`/dashboard/equipment/${equipment.uuid}/edit`),
     },
     {
         label: 'Delete',
         icon: Trash2,
-        onClick: (equipment) => router.visit(`/dashboard/equipment/${equipment.id}/delete`),
+        onClick: (equipment) => router.visit(`/dashboard/equipment/${equipment.uuid}/delete`),
         variant: 'destructive',
         separator: true,
     },

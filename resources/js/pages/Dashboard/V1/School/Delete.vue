@@ -40,7 +40,7 @@ const handleConfirmedChange = (value: boolean | 'indeterminate') => {
 };
 
 const handleSubmit = () => {
-    form.delete(`/dashboard/schools/${props.school.id}`, {
+    form.delete(`/dashboard/schools/${props.school.uuid}`, {
         onSuccess: () => {
             toast.success('School deleted successfully.');
             setTimeout(() => {
