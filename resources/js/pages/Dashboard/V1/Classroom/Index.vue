@@ -15,7 +15,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Plus, DoorOpen, CheckCircle, XCircle, Search, Eye, Pencil, Trash2, Users, Building } from 'lucide-vue-next';
+import { Plus, DoorOpen, CheckCircle, XCircle, Search, Eye, Pencil, Trash2, Users, Building, Download, Upload, FileSpreadsheet } from 'lucide-vue-next';
 import type { BreadcrumbItem } from '@/types';
 import type { ClassroomIndexProps, Classroom } from '@school/types';
 
@@ -125,6 +125,25 @@ const handleCreate = () => {
     router.visit('/dashboard/classrooms/create');
 };
 
+const handleExport = () => {
+    const filterParams = getFilterParams();
+    const params = new URLSearchParams();
+    Object.entries(filterParams).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+            params.append(key, String(value));
+        }
+    });
+    window.location.href = `/dashboard/classrooms/export?${params.toString()}`;
+};
+
+const handleImport = () => {
+    router.visit('/dashboard/classrooms/import');
+};
+
+const handleDownloadTemplate = () => {
+    window.location.href = '/dashboard/classrooms/template';
+};
+
 const handleStatusToggle = (classroom: Classroom, newStatus: boolean) => {
     router.put(`/dashboard/classrooms/${classroom.id}/toggle-status`, {
         status: newStatus,
@@ -180,10 +199,24 @@ const typeOptions = computed(() => {
                         <h2 class="text-lg font-semibold">Classrooms</h2>
                         <p class="text-sm text-muted-foreground">Manage classrooms and facilities</p>
                     </div>
-                    <Button @click="handleCreate">
-                        <Plus class="mr-2 h-4 w-4" />
-                        Add Classroom
-                    </Button>
+                    <div class="flex items-center gap-2">
+                        <Button variant="outline" @click="handleDownloadTemplate">
+                            <FileSpreadsheet class="mr-2 h-4 w-4" />
+                            Template
+                        </Button>
+                        <Button variant="outline" @click="handleExport">
+                            <Download class="mr-2 h-4 w-4" />
+                            Export
+                        </Button>
+                        <Button variant="outline" @click="handleImport">
+                            <Upload class="mr-2 h-4 w-4" />
+                            Import
+                        </Button>
+                        <Button @click="handleCreate">
+                            <Plus class="mr-2 h-4 w-4" />
+                            Add Classroom
+                        </Button>
+                    </div>
                 </div>
 
                 <!-- Filters -->

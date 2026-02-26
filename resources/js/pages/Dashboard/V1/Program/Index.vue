@@ -15,7 +15,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Plus, BookOpen, CheckCircle, XCircle, Search, Eye, Pencil, Trash2, GraduationCap } from 'lucide-vue-next';
+import { Plus, BookOpen, CheckCircle, XCircle, Search, Eye, Pencil, Trash2, GraduationCap, Download, Upload, FileSpreadsheet } from 'lucide-vue-next';
 import type { BreadcrumbItem } from '@/types';
 import type { ProgramIndexProps, Program } from '@school/types';
 
@@ -120,6 +120,25 @@ const handleCreate = () => {
     router.visit('/dashboard/programs/create');
 };
 
+const handleExport = () => {
+    const filterParams = getFilterParams();
+    const params = new URLSearchParams();
+    Object.entries(filterParams).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+            params.append(key, String(value));
+        }
+    });
+    window.location.href = `/dashboard/programs/export?${params.toString()}`;
+};
+
+const handleImport = () => {
+    router.visit('/dashboard/programs/import');
+};
+
+const handleDownloadTemplate = () => {
+    window.location.href = '/dashboard/programs/template';
+};
+
 const handleStatusToggle = (program: Program, newStatus: boolean) => {
     router.put(`/dashboard/programs/${program.id}/toggle-status`, {
         status: newStatus,
@@ -177,10 +196,24 @@ const schoolOptions = computed(() => {
                         <h2 class="text-lg font-semibold">Programs</h2>
                         <p class="text-sm text-muted-foreground">Manage academic programs</p>
                     </div>
-                    <Button @click="handleCreate">
-                        <Plus class="mr-2 h-4 w-4" />
-                        Add Program
-                    </Button>
+                    <div class="flex items-center gap-2">
+                        <Button variant="outline" @click="handleDownloadTemplate">
+                            <FileSpreadsheet class="mr-2 h-4 w-4" />
+                            Template
+                        </Button>
+                        <Button variant="outline" @click="handleExport">
+                            <Download class="mr-2 h-4 w-4" />
+                            Export
+                        </Button>
+                        <Button variant="outline" @click="handleImport">
+                            <Upload class="mr-2 h-4 w-4" />
+                            Import
+                        </Button>
+                        <Button @click="handleCreate">
+                            <Plus class="mr-2 h-4 w-4" />
+                            Add Program
+                        </Button>
+                    </div>
                 </div>
 
                 <!-- Filters -->

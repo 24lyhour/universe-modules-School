@@ -31,6 +31,8 @@ class Equipment extends Model
         'name',
         'slug',
         'icon',
+        'qty',
+        'price_total',
         'description',
         'category',
         'status',

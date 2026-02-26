@@ -15,7 +15,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Plus, BookOpen, CheckCircle, XCircle, Search, Eye, Pencil, Trash2 } from 'lucide-vue-next';
+import { Plus, BookOpen, CheckCircle, XCircle, Search, Eye, Pencil, Trash2, Download, Upload, FileSpreadsheet } from 'lucide-vue-next';
 import type { BreadcrumbItem } from '@/types';
 import type { CourseIndexProps, Course } from '@school/types';
 
@@ -127,6 +127,25 @@ const handleCreate = () => {
     router.visit('/dashboard/courses/create');
 };
 
+const handleExport = () => {
+    const filterParams = getFilterParams();
+    const params = new URLSearchParams();
+    Object.entries(filterParams).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+            params.append(key, String(value));
+        }
+    });
+    window.location.href = `/dashboard/courses/export?${params.toString()}`;
+};
+
+const handleImport = () => {
+    router.visit('/dashboard/courses/import');
+};
+
+const handleDownloadTemplate = () => {
+    window.location.href = '/dashboard/courses/template';
+};
+
 const handleStatusToggle = (course: Course, newStatus: boolean) => {
     router.put(`/dashboard/courses/${course.id}/toggle-status`, {
         status: newStatus,
@@ -177,10 +196,24 @@ const typeOptions = computed(() => {
                         <h2 class="text-lg font-semibold">Courses</h2>
                         <p class="text-sm text-muted-foreground">Manage courses and curricula</p>
                     </div>
-                    <Button @click="handleCreate">
-                        <Plus class="mr-2 h-4 w-4" />
-                        Add Course
-                    </Button>
+                    <div class="flex items-center gap-2">
+                        <Button variant="outline" @click="handleDownloadTemplate">
+                            <FileSpreadsheet class="mr-2 h-4 w-4" />
+                            Template
+                        </Button>
+                        <Button variant="outline" @click="handleExport">
+                            <Download class="mr-2 h-4 w-4" />
+                            Export
+                        </Button>
+                        <Button variant="outline" @click="handleImport">
+                            <Upload class="mr-2 h-4 w-4" />
+                            Import
+                        </Button>
+                        <Button @click="handleCreate">
+                            <Plus class="mr-2 h-4 w-4" />
+                            Add Course
+                        </Button>
+                    </div>
                 </div>
 
                 <!-- Filters -->

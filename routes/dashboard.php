@@ -7,6 +7,7 @@ use Modules\School\Http\Controllers\Dashboard\V1\DepartmentController;
 use Modules\School\Http\Controllers\Dashboard\V1\EquipmentController;
 use Modules\School\Http\Controllers\Dashboard\V1\ProgramController;
 use Modules\School\Http\Controllers\Dashboard\V1\SchoolController;
+use Modules\School\Http\Controllers\Dashboard\V1\SchoolImportExportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,6 +27,45 @@ use Modules\School\Http\Controllers\Dashboard\V1\SchoolController;
 */
 
 Route::middleware(['auth', 'verified', 'auto.permission'])->prefix('dashboard')->group(function () {
+
+    // ==================== IMPORT/EXPORT ROUTES (before parameterized routes) ====================
+
+    // Departments Import/Export
+    Route::get('departments/export', [SchoolImportExportController::class, 'exportDepartments'])->name('departments.export');
+    Route::get('departments/import', [SchoolImportExportController::class, 'showImportDepartments'])->name('departments.import');
+    Route::post('departments/import', [SchoolImportExportController::class, 'importDepartments'])->name('departments.import.store');
+    Route::post('departments/import/preview', [SchoolImportExportController::class, 'previewDepartments'])->name('departments.import.preview');
+    Route::get('departments/template', [SchoolImportExportController::class, 'downloadDepartmentsTemplate'])->name('departments.template');
+
+    // Classrooms Import/Export
+    Route::get('classrooms/export', [SchoolImportExportController::class, 'exportClassrooms'])->name('classrooms.export');
+    Route::get('classrooms/import', [SchoolImportExportController::class, 'showImportClassrooms'])->name('classrooms.import');
+    Route::post('classrooms/import', [SchoolImportExportController::class, 'importClassrooms'])->name('classrooms.import.store');
+    Route::post('classrooms/import/preview', [SchoolImportExportController::class, 'previewClassrooms'])->name('classrooms.import.preview');
+    Route::get('classrooms/template', [SchoolImportExportController::class, 'downloadClassroomsTemplate'])->name('classrooms.template');
+
+    // Courses Import/Export
+    Route::get('courses/export', [SchoolImportExportController::class, 'exportCourses'])->name('courses.export');
+    Route::get('courses/import', [SchoolImportExportController::class, 'showImportCourses'])->name('courses.import');
+    Route::post('courses/import', [SchoolImportExportController::class, 'importCourses'])->name('courses.import.store');
+    Route::post('courses/import/preview', [SchoolImportExportController::class, 'previewCourses'])->name('courses.import.preview');
+    Route::get('courses/template', [SchoolImportExportController::class, 'downloadCoursesTemplate'])->name('courses.template');
+
+    // Programs Import/Export
+    Route::get('programs/export', [SchoolImportExportController::class, 'exportPrograms'])->name('programs.export');
+    Route::get('programs/import', [SchoolImportExportController::class, 'showImportPrograms'])->name('programs.import');
+    Route::post('programs/import', [SchoolImportExportController::class, 'importPrograms'])->name('programs.import.store');
+    Route::post('programs/import/preview', [SchoolImportExportController::class, 'previewPrograms'])->name('programs.import.preview');
+    Route::get('programs/template', [SchoolImportExportController::class, 'downloadProgramsTemplate'])->name('programs.template');
+
+    // Equipment Import/Export
+    Route::get('equipment/export', [SchoolImportExportController::class, 'exportEquipment'])->name('equipment.export');
+    Route::get('equipment/import', [SchoolImportExportController::class, 'showImportEquipment'])->name('equipment.import');
+    Route::post('equipment/import', [SchoolImportExportController::class, 'importEquipment'])->name('equipment.import.store');
+    Route::post('equipment/import/preview', [SchoolImportExportController::class, 'previewEquipment'])->name('equipment.import.preview');
+    Route::get('equipment/template', [SchoolImportExportController::class, 'downloadEquipmentTemplate'])->name('equipment.template');
+
+    // ==================== CRUD ROUTES ====================
 
     // Schools - using resource with explicit route ordering
     Route::get('schools/create', [SchoolController::class, 'create'])->name('schools.create');
