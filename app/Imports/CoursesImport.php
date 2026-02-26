@@ -66,12 +66,30 @@ class CoursesImport implements ToCollection, WithHeadingRow, SkipsEmptyRows, Wit
             $rowNumber = $index + 2;
             $data = $this->normalizeRow($row->toArray());
 
+            // Resolve department name for preview
+            $departmentName = $data['department'] ?? null;
+            if ($departmentName) {
+                $dept = Department::withoutGlobalScopes()->where('name', $departmentName)->first();
+                if (!$dept) {
+                    $departmentName = $departmentName . ' (not found)';
+                }
+            }
+
+            // Resolve program name for preview
+            $programName = $data['program'] ?? null;
+            if ($programName) {
+                $prog = Program::withoutGlobalScopes()->where('name', $programName)->first();
+                if (!$prog) {
+                    $programName = $programName . ' (not found)';
+                }
+            }
+
             $preview = [
                 'row_number' => $rowNumber,
                 'name' => $data['name'] ?? null,
                 'code' => $data['code'] ?? null,
-                'department' => $data['department'] ?? null,
-                'program' => $data['program'] ?? null,
+                'department' => $departmentName,
+                'program' => $programName,
                 'credits' => $data['credits'] ?? null,
                 'status' => 'ready',
                 'errors' => [],
@@ -88,6 +106,24 @@ class CoursesImport implements ToCollection, WithHeadingRow, SkipsEmptyRows, Wit
             if ($validator->fails()) {
                 $preview['status'] = 'error';
                 $preview['errors'] = $validator->errors()->all();
+            }
+
+            // Validate department if specified
+            if (!empty($data['department'])) {
+                $dept = Department::withoutGlobalScopes()->where('name', $data['department'])->first();
+                if (!$dept) {
+                    $preview['status'] = 'error';
+                    $preview['errors'][] = "Department '{$data['department']}' not found. Please check the department name matches exactly.";
+                }
+            }
+
+            // Validate program if specified
+            if (!empty($data['program'])) {
+                $prog = Program::withoutGlobalScopes()->where('name', $data['program'])->first();
+                if (!$prog) {
+                    $preview['status'] = 'error';
+                    $preview['errors'][] = "Program '{$data['program']}' not found. Please check the program name matches exactly.";
+                }
             }
 
             if (!empty($data['code'])) {
@@ -125,6 +161,24 @@ class CoursesImport implements ToCollection, WithHeadingRow, SkipsEmptyRows, Wit
         if ($validator->fails()) {
             $this->addFailedRow($rowNumber, $data, $validator->errors()->all());
             return;
+        }
+
+        // Validate department if specified
+        if (!empty($data['department'])) {
+            $dept = Department::withoutGlobalScopes()->where('name', $data['department'])->first();
+            if (!$dept) {
+                $this->addFailedRow($rowNumber, $data, ["Department '{$data['department']}' not found"]);
+                return;
+            }
+        }
+
+        // Validate program if specified
+        if (!empty($data['program'])) {
+            $prog = Program::withoutGlobalScopes()->where('name', $data['program'])->first();
+            if (!$prog) {
+                $this->addFailedRow($rowNumber, $data, ["Program '{$data['program']}' not found"]);
+                return;
+            }
         }
 
         $existing = !empty($data['code'])
@@ -202,7 +256,7 @@ class CoursesImport implements ToCollection, WithHeadingRow, SkipsEmptyRows, Wit
     protected function resolveDepartmentId(array $data): ?int
     {
         if (!empty($data['department'])) {
-            $dept = Department::withoutGlobalScopes()->where('name', 'like', "%{$data['department']}%")->first();
+            $dept = Department::withoutGlobalScopes()->where('name', $data['department'])->first();
             return $dept?->id;
         }
         return null;
@@ -211,7 +265,7 @@ class CoursesImport implements ToCollection, WithHeadingRow, SkipsEmptyRows, Wit
     protected function resolveProgramId(array $data): ?int
     {
         if (!empty($data['program'])) {
-            $program = Program::withoutGlobalScopes()->where('name', 'like', "%{$data['program']}%")->first();
+            $program = Program::withoutGlobalScopes()->where('name', $data['program'])->first();
             return $program?->id;
         }
         return null;

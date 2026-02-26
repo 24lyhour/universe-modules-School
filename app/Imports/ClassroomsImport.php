@@ -65,11 +65,20 @@ class ClassroomsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows, 
             $rowNumber = $index + 2;
             $data = $this->normalizeRow($row->toArray());
 
+            // Resolve department name for preview
+            $departmentName = $data['department'] ?? null;
+            if ($departmentName) {
+                $dept = Department::withoutGlobalScopes()->where('name', $departmentName)->first();
+                if (!$dept) {
+                    $departmentName = $departmentName . ' (not found)';
+                }
+            }
+
             $preview = [
                 'row_number' => $rowNumber,
                 'name' => $data['name'] ?? null,
                 'code' => $data['code'] ?? null,
-                'department' => $data['department'] ?? null,
+                'department' => $departmentName,
                 'building' => $data['building'] ?? null,
                 'capacity' => $data['capacity'] ?? null,
                 'status' => 'ready',
@@ -87,6 +96,15 @@ class ClassroomsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows, 
             if ($validator->fails()) {
                 $preview['status'] = 'error';
                 $preview['errors'] = $validator->errors()->all();
+            }
+
+            // Validate department if specified
+            if (!empty($data['department'])) {
+                $dept = Department::withoutGlobalScopes()->where('name', $data['department'])->first();
+                if (!$dept) {
+                    $preview['status'] = 'error';
+                    $preview['errors'][] = "Department '{$data['department']}' not found. Please check the department name matches exactly.";
+                }
             }
 
             if (!empty($data['code'])) {
@@ -108,13 +126,6 @@ class ClassroomsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows, 
                 }
             }
 
-            if (!empty($data['department'])) {
-                $dept = Department::withoutGlobalScopes()->where('name', 'like', "%{$data['department']}%")->first();
-                if (!$dept) {
-                    $preview['warnings'][] = "Department '{$data['department']}' not found";
-                }
-            }
-
             $this->previewData[] = $preview;
         }
     }
@@ -131,6 +142,15 @@ class ClassroomsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows, 
         if ($validator->fails()) {
             $this->addFailedRow($rowNumber, $data, $validator->errors()->all());
             return;
+        }
+
+        // Validate department if specified
+        if (!empty($data['department'])) {
+            $dept = Department::withoutGlobalScopes()->where('name', $data['department'])->first();
+            if (!$dept) {
+                $this->addFailedRow($rowNumber, $data, ["Department '{$data['department']}' not found"]);
+                return;
+            }
         }
 
         $existing = !empty($data['code'])
@@ -207,7 +227,7 @@ class ClassroomsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows, 
     protected function resolveDepartmentId(array $data): ?int
     {
         if (!empty($data['department'])) {
-            $dept = Department::withoutGlobalScopes()->where('name', 'like', "%{$data['department']}%")->first();
+            $dept = Department::withoutGlobalScopes()->where('name', $data['department'])->first();
             return $dept?->id;
         }
         return null;

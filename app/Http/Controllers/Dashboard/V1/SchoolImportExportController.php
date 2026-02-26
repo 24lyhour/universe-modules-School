@@ -61,10 +61,12 @@ class SchoolImportExportController extends Controller
 
     public function downloadDepartmentsTemplate(): BinaryFileResponse
     {
-        $headers = ['Name', 'Code', 'Description', 'Email', 'Phone', 'Office Location', 'Established Year', 'Status'];
-        $sampleData = ['Computer Science', 'CS', 'Department of Computer Science', 'cs@school.edu', '+1234567890', 'Building A, Room 101', '2020', 'active'];
+        $headers = ['Name', 'Code', 'School', 'Description', 'Email', 'Phone', 'Office Location', 'Established Year', 'Status'];
+        $sampleData = ['Computer Science', 'CS', 'Royal University of Phnom Penh', 'Department of Computer Science', 'cs@school.edu', '+1234567890', 'Building A, Room 101', '2020', 'active'];
         $instructions = [
             'Name and Code are required fields',
+            'School must match an existing school name exactly (case-sensitive)',
+            'If School is empty, the default school will be used',
             'Code must be unique within the school',
             'Status: active or inactive (defaults to active)',
             'Established Year: YYYY format (e.g., 2020)',
@@ -104,7 +106,7 @@ class SchoolImportExportController extends Controller
         $sampleData = ['Room 101', 'R101', 'Computer Science', 'Building A', '1', '30', 'classroom', 'yes', 'yes', 'no', 'Standard classroom', 'active'];
         $instructions = [
             'Name and Code are required fields',
-            'Department must match an existing department name',
+            'Department must match an existing department name exactly (case-sensitive)',
             'Type: lecture_hall, classroom, lab, seminar, auditorium, workshop',
             'Has Projector/Whiteboard/AC: yes or no',
             'Status: active or inactive (defaults to active)',
@@ -144,7 +146,8 @@ class SchoolImportExportController extends Controller
         $sampleData = ['Introduction to Programming', 'CS101', 'Computer Science', 'Computer Science BSc', '3', 'required', '1', '2024', '30', 'Mon/Wed 9:00-10:30', 'Room 101', 'Basic programming concepts', 'active'];
         $instructions = [
             'Name and Code are required fields',
-            'Department and Program must match existing names',
+            'Department must match an existing department name exactly (case-sensitive)',
+            'Program must match an existing program name exactly (case-sensitive)',
             'Type: required, elective, core',
             'Credits: integer value',
             'Semester: 1 or 2',
@@ -181,11 +184,13 @@ class SchoolImportExportController extends Controller
 
     public function downloadProgramsTemplate(): BinaryFileResponse
     {
-        $headers = ['Name', 'Code', 'Department', 'Degree Level', 'Duration Years', 'Credits Required', 'Tuition Fee', 'Max Students', 'Admission Requirements', 'Description', 'Status'];
-        $sampleData = ['Computer Science BSc', 'CS-BSC', 'Computer Science', 'bachelor', '4', '120', '5000', '50', 'High school diploma, Math proficiency', 'Bachelor of Science in Computer Science', 'active'];
+        $headers = ['Name', 'Code', 'School', 'Department', 'Degree Level', 'Duration Years', 'Credits Required', 'Tuition Fee', 'Max Students', 'Admission Requirements', 'Description', 'Status'];
+        $sampleData = ['Computer Science BSc', 'CS-BSC', 'Royal University of Phnom Penh', 'Computer Science', 'bachelor', '4', '120', '5000', '50', 'High school diploma, Math proficiency', 'Bachelor of Science in Computer Science', 'active'];
         $instructions = [
             'Name and Code are required fields',
-            'Department must match an existing department name',
+            'School must match an existing school name exactly (case-sensitive)',
+            'If School is empty, the default school will be used',
+            'Department must match an existing department name exactly',
             'Degree Level: certificate, diploma, associate, bachelor, master, doctorate',
             'Duration Years: integer value',
             'Status: active or inactive (defaults to active)',

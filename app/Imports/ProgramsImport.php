@@ -72,11 +72,33 @@ class ProgramsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows, Wi
             $rowNumber = $index + 2;
             $data = $this->normalizeRow($row->toArray());
 
+            // Resolve school name for preview
+            $schoolName = $data['school'] ?? null;
+            if ($schoolName) {
+                $school = School::withoutGlobalScopes()->where('name', $schoolName)->first();
+                if (!$school) {
+                    $schoolName = $schoolName . ' (not found)';
+                }
+            } elseif ($this->defaultSchoolId) {
+                $defaultSchool = School::withoutGlobalScopes()->find($this->defaultSchoolId);
+                $schoolName = $defaultSchool ? $defaultSchool->name . ' (default)' : null;
+            }
+
+            // Resolve department name for preview
+            $departmentName = $data['department'] ?? null;
+            if ($departmentName) {
+                $dept = Department::withoutGlobalScopes()->where('name', $departmentName)->first();
+                if (!$dept) {
+                    $departmentName = $departmentName . ' (not found)';
+                }
+            }
+
             $preview = [
                 'row_number' => $rowNumber,
                 'name' => $data['name'] ?? null,
                 'code' => $data['code'] ?? null,
-                'department' => $data['department'] ?? null,
+                'school' => $schoolName,
+                'department' => $departmentName,
                 'degree_level' => $data['degree_level'] ?? null,
                 'duration_years' => $data['duration_years'] ?? null,
                 'status' => 'ready',
@@ -94,6 +116,24 @@ class ProgramsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows, Wi
             if ($validator->fails()) {
                 $preview['status'] = 'error';
                 $preview['errors'] = $validator->errors()->all();
+            }
+
+            // Validate school if specified
+            if (!empty($data['school'])) {
+                $school = School::withoutGlobalScopes()->where('name', $data['school'])->first();
+                if (!$school) {
+                    $preview['status'] = 'error';
+                    $preview['errors'][] = "School '{$data['school']}' not found. Please check the school name matches exactly.";
+                }
+            }
+
+            // Validate department if specified
+            if (!empty($data['department'])) {
+                $dept = Department::withoutGlobalScopes()->where('name', $data['department'])->first();
+                if (!$dept) {
+                    $preview['status'] = 'error';
+                    $preview['errors'][] = "Department '{$data['department']}' not found. Please check the department name matches exactly.";
+                }
             }
 
             if (!empty($data['code'])) {
@@ -133,6 +173,24 @@ class ProgramsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows, Wi
             return;
         }
 
+        // Validate school if specified
+        if (!empty($data['school'])) {
+            $school = School::withoutGlobalScopes()->where('name', $data['school'])->first();
+            if (!$school) {
+                $this->addFailedRow($rowNumber, $data, ["School '{$data['school']}' not found"]);
+                return;
+            }
+        }
+
+        // Validate department if specified
+        if (!empty($data['department'])) {
+            $dept = Department::withoutGlobalScopes()->where('name', $data['department'])->first();
+            if (!$dept) {
+                $this->addFailedRow($rowNumber, $data, ["Department '{$data['department']}' not found"]);
+                return;
+            }
+        }
+
         $existing = !empty($data['code'])
             ? Program::withoutGlobalScopes()->where('code', $data['code'])->first()
             : null;
@@ -157,7 +215,7 @@ class ProgramsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows, Wi
     protected function createRecord(array $data, int $rowNumber): void
     {
         try {
-            $schoolId = $this->resolveSchoolId();
+            $schoolId = $this->resolveSchoolId($data);
             $departmentId = $this->resolveDepartmentId($data);
 
             Program::create([
@@ -203,22 +261,37 @@ class ProgramsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows, Wi
         }
     }
 
-    protected function resolveSchoolId(): ?int
+    protected function resolveSchoolId(array $data): ?int
     {
-        if ($this->defaultSchoolId) return $this->defaultSchoolId;
+        // First, check if a school name is provided in the Excel data
+        if (!empty($data['school'])) {
+            $school = School::withoutGlobalScopes()
+                ->where('name', $data['school'])
+                ->first();
+
+            if ($school) {
+                return $school->id;
+            }
+        }
+
+        // Fall back to default school if no school specified or not found
+        if ($this->defaultSchoolId) {
+            return $this->defaultSchoolId;
+        }
 
         $tenantService = app(TenantService::class);
         if (!$tenantService->hasTenant()) {
             $firstSchool = School::withoutGlobalScopes()->first();
             return $firstSchool?->id;
         }
+
         return null;
     }
 
     protected function resolveDepartmentId(array $data): ?int
     {
         if (!empty($data['department'])) {
-            $dept = Department::withoutGlobalScopes()->where('name', 'like', "%{$data['department']}%")->first();
+            $dept = Department::withoutGlobalScopes()->where('name', $data['department'])->first();
             return $dept?->id;
         }
         return null;

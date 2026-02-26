@@ -72,10 +72,23 @@ class DepartmentsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows,
             $rowNumber = $index + 2;
             $data = $this->normalizeRow($row->toArray());
 
+            // Resolve school name for preview
+            $schoolName = $data['school'] ?? null;
+            if ($schoolName) {
+                $school = School::withoutGlobalScopes()->where('name', $schoolName)->first();
+                if (!$school) {
+                    $schoolName = $schoolName . ' (not found)';
+                }
+            } elseif ($this->defaultSchoolId) {
+                $defaultSchool = School::withoutGlobalScopes()->find($this->defaultSchoolId);
+                $schoolName = $defaultSchool ? $defaultSchool->name . ' (default)' : null;
+            }
+
             $preview = [
                 'row_number' => $rowNumber,
                 'name' => $data['name'] ?? null,
                 'code' => $data['code'] ?? null,
+                'school' => $schoolName,
                 'email' => $data['email'] ?? null,
                 'phone' => $data['phone'] ?? null,
                 'status' => 'ready',
@@ -93,6 +106,15 @@ class DepartmentsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows,
             if ($validator->fails()) {
                 $preview['status'] = 'error';
                 $preview['errors'] = $validator->errors()->all();
+            }
+
+            // Warn if school name is specified but not found
+            if (!empty($data['school'])) {
+                $school = School::withoutGlobalScopes()->where('name', $data['school'])->first();
+                if (!$school) {
+                    $preview['status'] = 'error';
+                    $preview['errors'][] = "School '{$data['school']}' not found. Please check the school name matches exactly.";
+                }
             }
 
             // Check for duplicate
@@ -132,6 +154,15 @@ class DepartmentsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows,
         if ($validator->fails()) {
             $this->addFailedRow($rowNumber, $data, $validator->errors()->all());
             return;
+        }
+
+        // Validate school if specified
+        if (!empty($data['school'])) {
+            $school = School::withoutGlobalScopes()->where('name', $data['school'])->first();
+            if (!$school) {
+                $this->addFailedRow($rowNumber, $data, ["School '{$data['school']}' not found"]);
+                return;
+            }
         }
 
         $existing = !empty($data['code'])
@@ -200,6 +231,18 @@ class DepartmentsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows,
 
     protected function resolveSchoolId(array $data): ?int
     {
+        // First, check if a school name is provided in the Excel data
+        if (!empty($data['school'])) {
+            $school = School::withoutGlobalScopes()
+                ->where('name', $data['school'])
+                ->first();
+
+            if ($school) {
+                return $school->id;
+            }
+        }
+
+        // Fall back to default school if no school specified or not found
         if ($this->defaultSchoolId) {
             return $this->defaultSchoolId;
         }
