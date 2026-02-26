@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue';
 import { Head, router } from '@inertiajs/vue3';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { TableReusable, StatsCard } from '@/components/shared';
+import { TableReusable, StatsCard, ButtonGroup } from '@/components/shared';
 import type { TableColumn, TableAction, PaginationData } from '@/components/shared';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,7 +15,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Plus, BookOpen, CheckCircle, XCircle, Search, Eye, Pencil, Trash2, Download, Upload, FileSpreadsheet } from 'lucide-vue-next';
+import { Plus, BookOpen, CheckCircle, XCircle, Search, Eye, Pencil, Trash2, Download, Upload, FileSpreadsheet, Database } from 'lucide-vue-next';
 import type { BreadcrumbItem } from '@/types';
 import type { CourseIndexProps, Course } from '@school/types';
 
@@ -146,6 +146,10 @@ const handleDownloadTemplate = () => {
     window.location.href = '/dashboard/courses/template';
 };
 
+const handleTrash = () => {
+    router.visit('/dashboard/courses/trash');
+};
+
 const handleStatusToggle = (course: Course, newStatus: boolean) => {
     router.put(`/dashboard/courses/${course.uuid}/toggle-status`, {
         status: newStatus,
@@ -197,18 +201,30 @@ const typeOptions = computed(() => {
                         <p class="text-sm text-muted-foreground">Manage courses and curricula</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <Button variant="outline" @click="handleDownloadTemplate">
-                            <FileSpreadsheet class="mr-2 h-4 w-4" />
-                            Template
-                        </Button>
-                        <Button variant="outline" @click="handleExport">
-                            <Download class="mr-2 h-4 w-4" />
-                            Export
-                        </Button>
-                        <Button variant="outline" @click="handleImport">
-                            <Upload class="mr-2 h-4 w-4" />
-                            Import
-                        </Button>
+                        <ButtonGroup>
+                            <Button variant="default">
+                                <Database class="mr-2 h-4 w-4" />
+                                All
+                            </Button>
+                            <Button variant="outline" @click="handleTrash">
+                                <Trash2 class="mr-2 h-4 w-4" />
+                                Trash
+                            </Button>
+                        </ButtonGroup>
+                        <ButtonGroup>
+                            <Button variant="outline" @click="handleExport">
+                                <Download class="mr-2 h-4 w-4" />
+                                Export
+                            </Button>
+                            <Button variant="outline" @click="handleImport">
+                                <Upload class="mr-2 h-4 w-4" />
+                                Import
+                            </Button>
+                            <Button variant="outline" @click="handleDownloadTemplate">
+                                <FileSpreadsheet class="mr-2 h-4 w-4" />
+                                Template
+                            </Button>
+                        </ButtonGroup>
                         <Button @click="handleCreate">
                             <Plus class="mr-2 h-4 w-4" />
                             Add Course

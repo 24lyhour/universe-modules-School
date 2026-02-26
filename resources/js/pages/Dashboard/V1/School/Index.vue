@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue';
 import { Head, router } from '@inertiajs/vue3';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { TableReusable, StatsCard } from '@/components/shared';
+import { TableReusable, StatsCard, ButtonGroup } from '@/components/shared';
 import type { TableColumn, TableAction, PaginationData } from '@/components/shared';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,7 +15,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Plus, GraduationCap, CheckCircle, XCircle, Search, Eye, Pencil, Trash2, Building2 } from 'lucide-vue-next';
+import { Plus, GraduationCap, CheckCircle, XCircle, Search, Eye, Pencil, Trash2, Building2, Database } from 'lucide-vue-next';
 import type { BreadcrumbItem } from '@/types';
 import type { SchoolIndexProps, School } from '@school/types';
 
@@ -118,6 +118,10 @@ const handleCreate = () => {
     router.visit('/dashboard/schools/create');
 };
 
+const handleTrash = () => {
+    router.visit('/dashboard/schools/trash');
+};
+
 const handleStatusToggle = (school: School, newStatus: boolean) => {
     router.put(`/dashboard/schools/${school.uuid}/toggle-status`, {
         status: newStatus,
@@ -168,10 +172,22 @@ const typeOptions = computed(() => {
                         <h2 class="text-lg font-semibold">Schools</h2>
                         <p class="text-sm text-muted-foreground">Manage schools and institutions</p>
                     </div>
-                    <Button @click="handleCreate">
-                        <Plus class="mr-2 h-4 w-4" />
-                        Add School
-                    </Button>
+                    <div class="flex items-center gap-2">
+                        <ButtonGroup>
+                            <Button variant="default">
+                                <Database class="mr-2 h-4 w-4" />
+                                All
+                            </Button>
+                            <Button variant="outline" @click="handleTrash">
+                                <Trash2 class="mr-2 h-4 w-4" />
+                                Trash
+                            </Button>
+                        </ButtonGroup>
+                        <Button @click="handleCreate">
+                            <Plus class="mr-2 h-4 w-4" />
+                            Add School
+                        </Button>
+                    </div>
                 </div>
 
                 <!-- Filters -->

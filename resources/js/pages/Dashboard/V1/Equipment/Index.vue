@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue';
 import { Head, router } from '@inertiajs/vue3';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { TableReusable, StatsCard } from '@/components/shared';
+import { TableReusable, StatsCard, ButtonGroup } from '@/components/shared';
 import type { TableColumn, TableAction, PaginationData } from '@/components/shared';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,7 +14,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Wrench, CheckCircle, Search, Eye, Pencil, Trash2, Monitor, Armchair, ShieldCheck, Accessibility, Download, Upload, FileSpreadsheet } from 'lucide-vue-next';
+import { Plus, Wrench, CheckCircle, Search, Eye, Pencil, Trash2, Monitor, Armchair, ShieldCheck, Accessibility, Download, Upload, FileSpreadsheet, Database } from 'lucide-vue-next';
 import type { BreadcrumbItem } from '@/types';
 import type { EquipmentIndexProps, Equipment } from '@school/types';
 
@@ -131,6 +131,10 @@ const handleDownloadTemplate = () => {
     window.location.href = '/dashboard/equipment/template';
 };
 
+const handleTrash = () => {
+    router.visit('/dashboard/equipment/trash');
+};
+
 const categoryOptions = computed(() => {
     return Object.entries(props.categories).map(([value, label]) => ({
         value,
@@ -202,18 +206,30 @@ const getCategoryVariant = (category: string) => {
                         <p class="text-sm text-muted-foreground">Manage classroom equipment and amenities</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <Button variant="outline" @click="handleDownloadTemplate">
-                            <FileSpreadsheet class="mr-2 h-4 w-4" />
-                            Template
-                        </Button>
-                        <Button variant="outline" @click="handleExport">
-                            <Download class="mr-2 h-4 w-4" />
-                            Export
-                        </Button>
-                        <Button variant="outline" @click="handleImport">
-                            <Upload class="mr-2 h-4 w-4" />
-                            Import
-                        </Button>
+                        <ButtonGroup>
+                            <Button variant="default">
+                                <Database class="mr-2 h-4 w-4" />
+                                All
+                            </Button>
+                            <Button variant="outline" @click="handleTrash">
+                                <Trash2 class="mr-2 h-4 w-4" />
+                                Trash
+                            </Button>
+                        </ButtonGroup>
+                        <ButtonGroup>
+                            <Button variant="outline" @click="handleExport">
+                                <Download class="mr-2 h-4 w-4" />
+                                Export
+                            </Button>
+                            <Button variant="outline" @click="handleImport">
+                                <Upload class="mr-2 h-4 w-4" />
+                                Import
+                            </Button>
+                            <Button variant="outline" @click="handleDownloadTemplate">
+                                <FileSpreadsheet class="mr-2 h-4 w-4" />
+                                Template
+                            </Button>
+                        </ButtonGroup>
                         <Button @click="handleCreate">
                             <Plus class="mr-2 h-4 w-4" />
                             Add Equipment
