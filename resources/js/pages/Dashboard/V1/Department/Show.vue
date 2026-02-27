@@ -234,8 +234,8 @@ const handleQrCode = () => {
                             <div class="flex items-center gap-3">
                                 <Users class="h-4 w-4 text-muted-foreground" />
                                 <div>
-                                    <p class="text-xs text-muted-foreground">Total Staff</p>
-                                    <p class="text-sm font-medium">{{ department.total_staff || 0 }}</p>
+                                    <p class="text-xs text-muted-foreground">Staff Count</p>
+                                    <p class="text-sm font-medium">{{ department.staff_count || 0 }}</p>
                                 </div>
                             </div>
                         </CardContent>

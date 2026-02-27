@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 use Momentum\Modal\Modal;
+use Modules\School\Actions\Dashboard\V1\BulkDeleteEquipmentAction;
 use Modules\School\Actions\Dashboard\V1\CreateEquipmentAction;
 use Modules\School\Actions\Dashboard\V1\DeleteEquipmentAction;
 use Modules\School\Actions\Dashboard\V1\GetEquipmentCreateDataAction;
@@ -15,6 +16,7 @@ use Modules\School\Actions\Dashboard\V1\GetEquipmentEditDataAction;
 use Modules\School\Actions\Dashboard\V1\GetEquipmentIndexDataAction;
 use Modules\School\Actions\Dashboard\V1\GetEquipmentShowDataAction;
 use Modules\School\Actions\Dashboard\V1\UpdateEquipmentAction;
+use Modules\School\Http\Requests\Dashboard\V1\BulkDeleteEquipmentRequest;
 use Modules\School\Http\Requests\Dashboard\V1\EquipmentRequest;
 use Modules\School\Http\Resources\Dashboard\V1\EquipmentResource;
 use Modules\School\Models\Equipment;
@@ -29,6 +31,7 @@ class EquipmentController extends Controller
         protected CreateEquipmentAction $createAction,
         protected UpdateEquipmentAction $updateAction,
         protected DeleteEquipmentAction $deleteAction,
+        protected BulkDeleteEquipmentAction $bulkDeleteAction,
     ) {}
 
     /**
@@ -122,5 +125,37 @@ class EquipmentController extends Controller
         return redirect()
             ->route('school.equipment.index')
             ->with('success', 'Equipment deleted successfully.');
+    }
+
+    /**
+     * Show bulk delete confirmation modal.
+     */
+    public function confirmBulkDelete(Request $request): Modal
+    {
+        $uuids = $request->input('uuids', []);
+
+        $equipment = Equipment::whereIn('uuid', $uuids)->get();
+
+        return Inertia::modal('school::Dashboard/V1/Equipment/BulkDelete', [
+            'equipment' => EquipmentResource::collection($equipment)->resolve(),
+        ])->baseRoute('school.equipment.index');
+    }
+
+    /**
+     * Bulk delete equipment.
+     */
+    public function bulkDelete(BulkDeleteEquipmentRequest $request): RedirectResponse
+    {
+        $result = $this->bulkDeleteAction->execute($request->validated('uuids'));
+
+        $message = "{$result['deleted']} equipment item(s) deleted successfully.";
+
+        if ($result['failed'] > 0) {
+            $message .= " {$result['failed']} equipment item(s) could not be found.";
+        }
+
+        return redirect()
+            ->route('school.equipment.index')
+            ->with('success', $message);
     }
 }

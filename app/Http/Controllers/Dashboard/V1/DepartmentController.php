@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 use Momentum\Modal\Modal;
+use Modules\School\Actions\Dashboard\V1\BulkDeleteDepartmentsAction;
 use Modules\School\Actions\Dashboard\V1\CreateDepartmentAction;
 use Modules\School\Actions\Dashboard\V1\DeleteDepartmentAction;
 use Modules\School\Actions\Dashboard\V1\GetDepartmentCreateDataAction;
@@ -17,6 +18,7 @@ use Modules\School\Actions\Dashboard\V1\GetDepartmentIndexDataAction;
 use Modules\School\Actions\Dashboard\V1\GetDepartmentShowDataAction;
 use Modules\School\Actions\Dashboard\V1\ToggleDepartmentStatusAction;
 use Modules\School\Actions\Dashboard\V1\UpdateDepartmentAction;
+use Modules\School\Http\Requests\Dashboard\V1\BulkDeleteDepartmentsRequest;
 use Modules\School\Http\Requests\Dashboard\V1\StoreDepartmentRequest;
 use Modules\School\Http\Requests\Dashboard\V1\UpdateDepartmentRequest;
 use Modules\School\Http\Resources\Dashboard\V1\DepartmentResource;
@@ -33,6 +35,7 @@ class DepartmentController extends Controller
         protected UpdateDepartmentAction $updateAction,
         protected DeleteDepartmentAction $deleteAction,
         protected ToggleDepartmentStatusAction $toggleStatusAction,
+        protected BulkDeleteDepartmentsAction $bulkDeleteAction,
     ) {}
 
     /**
@@ -126,6 +129,40 @@ class DepartmentController extends Controller
         return redirect()
             ->route('school.departments.index')
             ->with('success', 'Department deleted successfully.');
+    }
+
+    /**
+     * Show bulk delete confirmation modal.
+     */
+    public function confirmBulkDelete(Request $request): Modal
+    {
+        $uuids = $request->input('uuids', []);
+
+        $departments = Department::whereIn('uuid', $uuids)
+            ->with('school:id,name')
+            ->get();
+
+        return Inertia::modal('school::Dashboard/V1/Department/BulkDelete', [
+            'departments' => DepartmentResource::collection($departments)->resolve(),
+        ])->baseRoute('school.departments.index');
+    }
+
+    /**
+     * Bulk delete departments.
+     */
+    public function bulkDelete(BulkDeleteDepartmentsRequest $request): RedirectResponse
+    {
+        $result = $this->bulkDeleteAction->execute($request->validated('uuids'));
+
+        $message = "{$result['deleted']} department(s) deleted successfully.";
+
+        if ($result['failed'] > 0) {
+            $message .= " {$result['failed']} department(s) could not be found.";
+        }
+
+        return redirect()
+            ->route('school.departments.index')
+            ->with('success', $message);
     }
 
     /**

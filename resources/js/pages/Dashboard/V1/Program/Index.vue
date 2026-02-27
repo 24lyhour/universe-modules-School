@@ -31,6 +31,18 @@ const statusFilter = ref(props.filters.status || 'all');
 const degreeLevelFilter = ref(props.filters.degree_level || 'all');
 const schoolFilter = ref(props.filters.school_id?.toString() || 'all');
 
+// Selection state
+const selectedUuids = ref<(string | number)[]>([]);
+
+// Bulk delete handler
+const openBulkDeleteDialog = () => {
+    const params = new URLSearchParams();
+    selectedUuids.value.forEach((uuid) => {
+        params.append('uuids[]', String(uuid));
+    });
+    router.visit(`/dashboard/programs/bulk-delete?${params.toString()}`);
+};
+
 const columns: TableColumn<Program>[] = [
     {
         key: 'name',
@@ -279,14 +291,23 @@ const schoolOptions = computed(() => {
 
                 <!-- Table -->
                 <TableReusable
+                    v-model:selected="selectedUuids"
                     :data="props.programs.data"
                     :columns="columns"
                     :actions="actions"
                     :pagination="pagination"
                     :searchable="false"
+                    :selectable="true"
+                    select-key="uuid"
                     @page-change="handlePageChange"
                     @per-page-change="handlePerPageChange"
                 >
+                    <template #bulk-actions>
+                        <Button variant="destructive" size="sm" @click="openBulkDeleteDialog">
+                            <Trash2 class="mr-2 h-4 w-4" />
+                            Delete Selected
+                        </Button>
+                    </template>
                     <template #cell-name="{ item }">
                         <div class="flex items-center gap-3">
                             <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">

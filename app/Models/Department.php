@@ -32,7 +32,6 @@ class Department extends Model
         'phone',
         'office_location',
         'established_year',
-        'total_staff',
         'total_students',
         'status',
     ];
@@ -42,10 +41,14 @@ class Department extends Model
      */
     protected $casts = [
         'established_year' => 'integer',
-        'total_staff' => 'integer',
         'total_students' => 'integer',
         'status' => 'boolean',
     ];
+
+    /**
+     * The accessors to append to the model's array form.
+     */
+    protected $appends = ['staff_count'];
 
     /**
      * Boot the model.
@@ -91,6 +94,14 @@ class Department extends Model
     public function employees(): HasMany
     {
         return $this->hasMany(Employee::class);
+    }
+
+    /**
+     * Get the staff count (computed from employees relationship).
+     */
+    public function getStaffCountAttribute(): int
+    {
+        return $this->employees()->count();
     }
 
     /**

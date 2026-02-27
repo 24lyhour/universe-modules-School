@@ -124,6 +124,8 @@ Route::middleware(['auth', 'verified', 'auto.permission'])->prefix('dashboard')-
     Route::delete('schools/{school}', [SchoolController::class, 'destroy'])->name('schools.destroy');
 
     // Departments
+    Route::get('departments/bulk-delete', [DepartmentController::class, 'confirmBulkDelete'])->name('departments.bulk-delete.confirm');
+    Route::delete('departments/bulk-delete', [DepartmentController::class, 'bulkDelete'])->name('departments.bulk-delete');
     Route::get('departments/create', [DepartmentController::class, 'create'])->name('departments.create');
     Route::post('departments', [DepartmentController::class, 'store'])->name('departments.store');
     Route::get('departments', [DepartmentController::class, 'index'])->name('departments.index');
@@ -138,6 +140,8 @@ Route::middleware(['auth', 'verified', 'auto.permission'])->prefix('dashboard')-
     Route::delete('departments/{department}', [DepartmentController::class, 'destroy'])->name('departments.destroy');
 
     // Programs
+    Route::get('programs/bulk-delete', [ProgramController::class, 'confirmBulkDelete'])->name('programs.bulk-delete.confirm');
+    Route::delete('programs/bulk-delete', [ProgramController::class, 'bulkDelete'])->name('programs.bulk-delete');
     Route::get('programs/create', [ProgramController::class, 'create'])->name('programs.create');
     Route::post('programs', [ProgramController::class, 'store'])->name('programs.store');
     Route::get('programs', [ProgramController::class, 'index'])->name('programs.index');
@@ -151,6 +155,8 @@ Route::middleware(['auth', 'verified', 'auto.permission'])->prefix('dashboard')-
     Route::delete('programs/{program}', [ProgramController::class, 'destroy'])->name('programs.destroy');
 
     // Courses
+    Route::get('courses/bulk-delete', [CourseController::class, 'confirmBulkDelete'])->name('courses.bulk-delete.confirm');
+    Route::delete('courses/bulk-delete', [CourseController::class, 'bulkDelete'])->name('courses.bulk-delete');
     Route::get('courses/create', [CourseController::class, 'create'])->name('courses.create');
     Route::post('courses', [CourseController::class, 'store'])->name('courses.store');
     Route::get('courses', [CourseController::class, 'index'])->name('courses.index');
@@ -163,6 +169,8 @@ Route::middleware(['auth', 'verified', 'auto.permission'])->prefix('dashboard')-
     Route::delete('courses/{course}', [CourseController::class, 'destroy'])->name('courses.destroy');
 
     // Classrooms
+    Route::get('classrooms/bulk-delete', [ClassroomController::class, 'confirmBulkDelete'])->name('classrooms.bulk-delete.confirm');
+    Route::delete('classrooms/bulk-delete', [ClassroomController::class, 'bulkDelete'])->name('classrooms.bulk-delete');
     Route::get('classrooms/create', [ClassroomController::class, 'create'])->name('classrooms.create');
     Route::post('classrooms', [ClassroomController::class, 'store'])->name('classrooms.store');
     Route::get('classrooms', [ClassroomController::class, 'index'])->name('classrooms.index');
@@ -176,6 +184,8 @@ Route::middleware(['auth', 'verified', 'auto.permission'])->prefix('dashboard')-
     Route::delete('classrooms/{classroom}', [ClassroomController::class, 'destroy'])->name('classrooms.destroy');
 
     // Equipment
+    Route::get('equipment/bulk-delete', [EquipmentController::class, 'confirmBulkDelete'])->name('equipment.bulk-delete.confirm');
+    Route::delete('equipment/bulk-delete', [EquipmentController::class, 'bulkDelete'])->name('equipment.bulk-delete');
     Route::get('equipment/create', [EquipmentController::class, 'create'])->name('equipment.create');
     Route::post('equipment', [EquipmentController::class, 'store'])->name('equipment.store');
     Route::get('equipment', [EquipmentController::class, 'index'])->name('equipment.index');

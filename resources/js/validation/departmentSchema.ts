@@ -10,7 +10,6 @@ export const departmentSchema = z.object({
     phone: z.string().max(20, 'Phone must be less than 20 characters').nullable().optional(),
     office_location: z.string().max(255, 'Office location must be less than 255 characters').nullable().optional(),
     established_year: z.number().min(1800, 'Year must be at least 1800').max(new Date().getFullYear(), 'Year cannot be in the future').nullable().optional(),
-    total_staff: z.number().min(0, 'Total staff cannot be negative').nullable().optional(),
     total_students: z.number().min(0, 'Total students cannot be negative').nullable().optional(),
     status: z.boolean(),
 });

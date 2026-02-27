@@ -130,12 +130,13 @@ export interface Department {
     phone: string | null;
     office_location: string | null;
     established_year: number | null;
-    total_staff: number | null;
+    staff_count: number;
     total_students: number | null;
     status: boolean;
     school_name: string | null;
     school?: {
         id: number;
+        uuid: string;
         name: string;
         code: string | null;
     };
@@ -168,7 +169,6 @@ export interface DepartmentFormData {
     phone: string;
     office_location: string;
     established_year: number | null;
-    total_staff: number | null;
     total_students: number | null;
     status: boolean;
 }

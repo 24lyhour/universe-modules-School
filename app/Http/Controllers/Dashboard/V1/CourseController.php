@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 use Momentum\Modal\Modal;
+use Modules\School\Actions\Dashboard\V1\BulkDeleteCoursesAction;
 use Modules\School\Actions\Dashboard\V1\CreateCourseAction;
 use Modules\School\Actions\Dashboard\V1\DeleteCourseAction;
 use Modules\School\Actions\Dashboard\V1\GetCourseCreateDataAction;
@@ -16,6 +17,7 @@ use Modules\School\Actions\Dashboard\V1\GetCourseIndexDataAction;
 use Modules\School\Actions\Dashboard\V1\GetCourseShowDataAction;
 use Modules\School\Actions\Dashboard\V1\ToggleCourseStatusAction;
 use Modules\School\Actions\Dashboard\V1\UpdateCourseAction;
+use Modules\School\Http\Requests\Dashboard\V1\BulkDeleteCoursesRequest;
 use Modules\School\Http\Requests\Dashboard\V1\StoreCourseRequest;
 use Modules\School\Http\Requests\Dashboard\V1\UpdateCourseRequest;
 use Modules\School\Http\Resources\Dashboard\V1\CourseResource;
@@ -32,6 +34,7 @@ class CourseController extends Controller
         protected UpdateCourseAction $updateAction,
         protected DeleteCourseAction $deleteAction,
         protected ToggleCourseStatusAction $toggleStatusAction,
+        protected BulkDeleteCoursesAction $bulkDeleteAction,
     ) {}
 
     /**
@@ -139,5 +142,37 @@ class CourseController extends Controller
         return redirect()
             ->back()
             ->with('success', "Course {$status} successfully.");
+    }
+
+    /**
+     * Show bulk delete confirmation modal.
+     */
+    public function confirmBulkDelete(Request $request): Modal
+    {
+        $uuids = $request->input('uuids', []);
+
+        $courses = Course::whereIn('uuid', $uuids)->get();
+
+        return Inertia::modal('school::Dashboard/V1/Course/BulkDelete', [
+            'courses' => CourseResource::collection($courses)->resolve(),
+        ])->baseRoute('school.courses.index');
+    }
+
+    /**
+     * Bulk delete courses.
+     */
+    public function bulkDelete(BulkDeleteCoursesRequest $request): RedirectResponse
+    {
+        $result = $this->bulkDeleteAction->execute($request->validated('uuids'));
+
+        $message = "{$result['deleted']} course(s) deleted successfully.";
+
+        if ($result['failed'] > 0) {
+            $message .= " {$result['failed']} course(s) could not be found.";
+        }
+
+        return redirect()
+            ->route('school.courses.index')
+            ->with('success', $message);
     }
 }

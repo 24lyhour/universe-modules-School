@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 use Momentum\Modal\Modal;
+use Modules\School\Actions\Dashboard\V1\BulkDeleteProgramsAction;
 use Modules\School\Actions\Dashboard\V1\CreateProgramAction;
 use Modules\School\Actions\Dashboard\V1\DeleteProgramAction;
 use Modules\School\Actions\Dashboard\V1\GetProgramCreateDataAction;
@@ -16,6 +17,7 @@ use Modules\School\Actions\Dashboard\V1\GetProgramIndexDataAction;
 use Modules\School\Actions\Dashboard\V1\GetProgramShowDataAction;
 use Modules\School\Actions\Dashboard\V1\ToggleProgramStatusAction;
 use Modules\School\Actions\Dashboard\V1\UpdateProgramAction;
+use Modules\School\Http\Requests\Dashboard\V1\BulkDeleteProgramsRequest;
 use Modules\School\Http\Requests\Dashboard\V1\StoreProgramRequest;
 use Modules\School\Http\Requests\Dashboard\V1\UpdateProgramRequest;
 use Modules\School\Http\Resources\Dashboard\V1\ProgramResource;
@@ -34,6 +36,7 @@ class ProgramController extends Controller
         protected UpdateProgramAction $updateAction,
         protected DeleteProgramAction $deleteAction,
         protected ToggleProgramStatusAction $toggleStatusAction,
+        protected BulkDeleteProgramsAction $bulkDeleteAction,
     ) {}
 
     /**
@@ -141,5 +144,37 @@ class ProgramController extends Controller
         return redirect()
             ->back()
             ->with('success', "Program {$status} successfully.");
+    }
+
+    /**
+     * Show bulk delete confirmation modal.
+     */
+    public function confirmBulkDelete(Request $request): Modal
+    {
+        $uuids = $request->input('uuids', []);
+
+        $programs = Program::whereIn('uuid', $uuids)->get();
+
+        return Inertia::modal('school::Dashboard/V1/Program/BulkDelete', [
+            'programs' => ProgramResource::collection($programs)->resolve(),
+        ])->baseRoute('school.programs.index');
+    }
+
+    /**
+     * Bulk delete programs.
+     */
+    public function bulkDelete(BulkDeleteProgramsRequest $request): RedirectResponse
+    {
+        $result = $this->bulkDeleteAction->execute($request->validated('uuids'));
+
+        $message = "{$result['deleted']} program(s) deleted successfully.";
+
+        if ($result['failed'] > 0) {
+            $message .= " {$result['failed']} program(s) could not be found.";
+        }
+
+        return redirect()
+            ->route('school.programs.index')
+            ->with('success', $message);
     }
 }

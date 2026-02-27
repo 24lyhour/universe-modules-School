@@ -29,6 +29,18 @@ const search = ref(props.filters.search || '');
 const statusFilter = ref(props.filters.status || 'all');
 const categoryFilter = ref(props.filters.category || 'all');
 
+// Selection state
+const selectedUuids = ref<(string | number)[]>([]);
+
+// Bulk delete handler
+const openBulkDeleteDialog = () => {
+    const params = new URLSearchParams();
+    selectedUuids.value.forEach((uuid) => {
+        params.append('uuids[]', String(uuid));
+    });
+    router.visit(`/dashboard/equipment/bulk-delete?${params.toString()}`);
+};
+
 const columns: TableColumn<Equipment>[] = [
     {
         key: 'name',
@@ -273,14 +285,23 @@ const getCategoryVariant = (category: string) => {
 
                 <!-- Table -->
                 <TableReusable
+                    v-model:selected="selectedUuids"
                     :data="props.equipment.data"
                     :columns="columns"
                     :actions="actions"
                     :pagination="pagination"
                     :searchable="false"
+                    :selectable="true"
+                    select-key="uuid"
                     @page-change="handlePageChange"
                     @per-page-change="handlePerPageChange"
                 >
+                    <template #bulk-actions>
+                        <Button variant="destructive" size="sm" @click="openBulkDeleteDialog">
+                            <Trash2 class="mr-2 h-4 w-4" />
+                            Delete Selected
+                        </Button>
+                    </template>
                     <template #cell-name="{ item }">
                         <div class="flex items-center gap-3">
                             <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">

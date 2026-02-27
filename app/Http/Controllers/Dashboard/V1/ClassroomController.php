@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 use Momentum\Modal\Modal;
+use Modules\School\Actions\Dashboard\V1\BulkDeleteClassroomsAction;
 use Modules\School\Actions\Dashboard\V1\CreateClassroomAction;
 use Modules\School\Actions\Dashboard\V1\DeleteClassroomAction;
 use Modules\School\Actions\Dashboard\V1\GetClassroomCreateDataAction;
@@ -16,6 +17,7 @@ use Modules\School\Actions\Dashboard\V1\GetClassroomIndexDataAction;
 use Modules\School\Actions\Dashboard\V1\GetClassroomShowDataAction;
 use Modules\School\Actions\Dashboard\V1\ToggleClassroomStatusAction;
 use Modules\School\Actions\Dashboard\V1\UpdateClassroomAction;
+use Modules\School\Http\Requests\Dashboard\V1\BulkDeleteClassroomsRequest;
 use Modules\School\Http\Requests\Dashboard\V1\StoreClassroomRequest;
 use Modules\School\Http\Requests\Dashboard\V1\UpdateClassroomRequest;
 use Modules\School\Http\Resources\Dashboard\V1\ClassroomResource;
@@ -32,6 +34,7 @@ class ClassroomController extends Controller
         protected UpdateClassroomAction $updateAction,
         protected DeleteClassroomAction $deleteAction,
         protected ToggleClassroomStatusAction $toggleStatusAction,
+        protected BulkDeleteClassroomsAction $bulkDeleteAction,
     ) {}
 
     /**
@@ -174,5 +177,37 @@ class ClassroomController extends Controller
             ],
             'qrData' => $qrData,
         ]);
+    }
+
+    /**
+     * Show bulk delete confirmation modal.
+     */
+    public function confirmBulkDelete(Request $request): Modal
+    {
+        $uuids = $request->input('uuids', []);
+
+        $classrooms = Classroom::whereIn('uuid', $uuids)->get();
+
+        return Inertia::modal('school::Dashboard/V1/Classroom/BulkDelete', [
+            'classrooms' => ClassroomResource::collection($classrooms)->resolve(),
+        ])->baseRoute('school.classrooms.index');
+    }
+
+    /**
+     * Bulk delete classrooms.
+     */
+    public function bulkDelete(BulkDeleteClassroomsRequest $request): RedirectResponse
+    {
+        $result = $this->bulkDeleteAction->execute($request->validated('uuids'));
+
+        $message = "{$result['deleted']} classroom(s) deleted successfully.";
+
+        if ($result['failed'] > 0) {
+            $message .= " {$result['failed']} classroom(s) could not be found.";
+        }
+
+        return redirect()
+            ->route('school.classrooms.index')
+            ->with('success', $message);
     }
 }

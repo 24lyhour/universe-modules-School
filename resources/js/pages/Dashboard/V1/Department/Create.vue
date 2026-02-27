@@ -33,7 +33,6 @@ const form = useForm<DepartmentFormData>({
     phone: '',
     office_location: '',
     established_year: null,
-    total_staff: null,
     total_students: null,
     status: true,
 });
@@ -72,7 +71,6 @@ const getFormData = () => ({
     phone: form.phone || null,
     office_location: form.office_location || null,
     established_year: form.established_year,
-    total_staff: form.total_staff,
     total_students: form.total_students,
     status: form.status,
 });

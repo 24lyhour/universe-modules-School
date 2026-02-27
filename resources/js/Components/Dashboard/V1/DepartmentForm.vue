@@ -50,13 +50,6 @@ const establishedYearValue = computed({
     }
 });
 
-const totalStaffValue = computed({
-    get: () => model.value.total_staff ?? undefined,
-    set: (val: string | number | undefined | null) => {
-        model.value.total_staff = val ? Number(val) : null;
-    }
-});
-
 const totalStudentsValue = computed({
     get: () => model.value.total_students ?? undefined,
     set: (val: string | number | undefined | null) => {
@@ -184,8 +177,8 @@ const totalStudentsValue = computed({
             </div>
         </div>
 
-        <!-- Established Year & Stats -->
-        <div class="grid gap-4 sm:grid-cols-3">
+        <!-- Established Year & Total Students -->
+        <div class="grid gap-4 sm:grid-cols-2">
             <div class="space-y-2">
                 <Label for="established_year">Established Year</Label>
                 <Input
@@ -196,18 +189,6 @@ const totalStudentsValue = computed({
                 />
                 <p v-if="model.errors.established_year" class="text-xs text-destructive">
                     {{ model.errors.established_year }}
-                </p>
-            </div>
-            <div class="space-y-2">
-                <Label for="total_staff">Total Staff</Label>
-                <Input
-                    id="total_staff"
-                    type="number"
-                    v-model.number="totalStaffValue"
-                    placeholder="0"
-                />
-                <p v-if="model.errors.total_staff" class="text-xs text-destructive">
-                    {{ model.errors.total_staff }}
                 </p>
             </div>
             <div class="space-y-2">

@@ -15,9 +15,9 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Building, CheckCircle, XCircle, Search, Eye, Pencil, Trash2, Download, Upload, FileSpreadsheet, Database } from 'lucide-vue-next';
+import { Plus, Building, CheckCircle, XCircle, Search, Eye, Pencil, Trash2, Download, Upload, FileSpreadsheet, Database, Users } from 'lucide-vue-next';
 import type { BreadcrumbItem } from '@/types';
-import type { DepartmentIndexProps, Department, SchoolOption } from '@school/types';
+import type { DepartmentIndexProps, Department } from '@school/types';
 
 const props = defineProps<DepartmentIndexProps>();
 
@@ -29,6 +29,9 @@ const breadcrumbs: BreadcrumbItem[] = [
 const search = ref(props.filters.search || '');
 const statusFilter = ref(props.filters.status || 'all');
 const schoolFilter = ref(props.filters.school_id || 'all');
+
+// Selection state - now using v-model with TableReusable
+const selectedUuids = ref<(string | number)[]>([]);
 
 const columns: TableColumn<Department>[] = [
     {
@@ -50,6 +53,12 @@ const columns: TableColumn<Department>[] = [
         key: 'head_of_department',
         label: 'Head',
         render: (department) => department.head_of_department || '-',
+    },
+    {
+        key: 'staff_count',
+        label: 'Staff',
+        align: 'center',
+        render: (department) => department.staff_count ?? 0,
     },
     {
         key: 'status',
@@ -161,6 +170,15 @@ const handleStatusFilterChange = (value: string | number | boolean | bigint | Re
         statusFilter.value = value;
     }
 };
+
+// Bulk delete handler - navigate to confirmation modal
+const openBulkDeleteDialog = () => {
+    const params = new URLSearchParams();
+    selectedUuids.value.forEach((uuid) => {
+        params.append('uuids[]', String(uuid));
+    });
+    router.visit(`/dashboard/departments/bulk-delete?${params.toString()}`);
+};
 </script>
 
 <template>
@@ -262,16 +280,25 @@ const handleStatusFilterChange = (value: string | number | boolean | bigint | Re
                     </Select>
                 </div>
 
-                <!-- Table -->
+                <!-- Table with built-in selection -->
                 <TableReusable
+                    v-model:selected="selectedUuids"
                     :data="props.departments.data"
                     :columns="columns"
                     :actions="actions"
                     :pagination="pagination"
                     :searchable="false"
+                    :selectable="true"
+                    select-key="uuid"
                     @page-change="handlePageChange"
                     @per-page-change="handlePerPageChange"
                 >
+                    <template #bulk-actions>
+                        <Button variant="destructive" size="sm" @click="openBulkDeleteDialog">
+                            <Trash2 class="mr-2 h-4 w-4" />
+                            Delete Selected
+                        </Button>
+                    </template>
                     <template #cell-name="{ item }">
                         <div class="flex items-center gap-3">
                             <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
@@ -285,6 +312,12 @@ const handleStatusFilterChange = (value: string | number | boolean | bigint | Re
                     </template>
                     <template #cell-school="{ item }">
                         <Badge variant="outline">{{ item.school_name || '-' }}</Badge>
+                    </template>
+                    <template #cell-staff_count="{ item }">
+                        <div class="flex items-center justify-center gap-1">
+                            <Users class="h-4 w-4 text-muted-foreground" />
+                            <span>{{ item.staff_count ?? 0 }}</span>
+                        </div>
                     </template>
                     <template #cell-status="{ item }">
                         <div class="flex items-center gap-2" @click.stop>
@@ -300,5 +333,6 @@ const handleStatusFilterChange = (value: string | number | boolean | bigint | Re
                 </TableReusable>
             </div>
         </div>
+
     </AppLayout>
 </template>
