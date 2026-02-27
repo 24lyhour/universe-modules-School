@@ -18,6 +18,13 @@ class Department extends Model
     protected $table = 'school_departments';
 
     /**
+     * The model's default values for attributes.
+     */
+    protected $attributes = [
+        'total_students' => 0,
+    ];
+
+    /**
      * The attributes that are mass assignable.
      */
     protected $fillable = [
@@ -60,6 +67,13 @@ class Department extends Model
         static::creating(function ($model) {
             if (empty($model->uuid)) {
                 $model->uuid = (string) Str::uuid();
+            }
+        });
+
+        // Ensure nullable integers have defaults before save
+        static::saving(function ($model) {
+            if (is_null($model->total_students)) {
+                $model->total_students = 0;
             }
         });
     }
