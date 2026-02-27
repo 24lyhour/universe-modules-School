@@ -78,36 +78,48 @@ Route::middleware(['auth', 'verified', 'auto.permission'])->prefix('dashboard')-
     Route::put('departments/{uuid}/restore', [DepartmentTrashController::class, 'restore'])->name('departments.trash.restore');
     Route::delete('departments/{uuid}/force-delete', [DepartmentTrashController::class, 'forceDelete'])->name('departments.trash.force-delete');
     Route::delete('departments/trash/empty', [DepartmentTrashController::class, 'empty'])->name('departments.trash.empty');
+    Route::put('departments/trash/bulk-restore', [DepartmentTrashController::class, 'bulkRestore'])->name('departments.trash.bulk-restore');
+    Route::delete('departments/trash/bulk-force-delete', [DepartmentTrashController::class, 'bulkForceDelete'])->name('departments.trash.bulk-force-delete');
 
     // Classrooms Trash
     Route::get('classrooms/trash', [ClassroomTrashController::class, 'index'])->name('classrooms.trash.index');
     Route::put('classrooms/{uuid}/restore', [ClassroomTrashController::class, 'restore'])->name('classrooms.trash.restore');
     Route::delete('classrooms/{uuid}/force-delete', [ClassroomTrashController::class, 'forceDelete'])->name('classrooms.trash.force-delete');
     Route::delete('classrooms/trash/empty', [ClassroomTrashController::class, 'empty'])->name('classrooms.trash.empty');
+    Route::put('classrooms/trash/bulk-restore', [ClassroomTrashController::class, 'bulkRestore'])->name('classrooms.trash.bulk-restore');
+    Route::delete('classrooms/trash/bulk-force-delete', [ClassroomTrashController::class, 'bulkForceDelete'])->name('classrooms.trash.bulk-force-delete');
 
     // Courses Trash
     Route::get('courses/trash', [CourseTrashController::class, 'index'])->name('courses.trash.index');
     Route::put('courses/{uuid}/restore', [CourseTrashController::class, 'restore'])->name('courses.trash.restore');
     Route::delete('courses/{uuid}/force-delete', [CourseTrashController::class, 'forceDelete'])->name('courses.trash.force-delete');
     Route::delete('courses/trash/empty', [CourseTrashController::class, 'empty'])->name('courses.trash.empty');
+    Route::put('courses/trash/bulk-restore', [CourseTrashController::class, 'bulkRestore'])->name('courses.trash.bulk-restore');
+    Route::delete('courses/trash/bulk-force-delete', [CourseTrashController::class, 'bulkForceDelete'])->name('courses.trash.bulk-force-delete');
 
     // Programs Trash
     Route::get('programs/trash', [ProgramTrashController::class, 'index'])->name('programs.trash.index');
     Route::put('programs/{uuid}/restore', [ProgramTrashController::class, 'restore'])->name('programs.trash.restore');
     Route::delete('programs/{uuid}/force-delete', [ProgramTrashController::class, 'forceDelete'])->name('programs.trash.force-delete');
     Route::delete('programs/trash/empty', [ProgramTrashController::class, 'empty'])->name('programs.trash.empty');
+    Route::put('programs/trash/bulk-restore', [ProgramTrashController::class, 'bulkRestore'])->name('programs.trash.bulk-restore');
+    Route::delete('programs/trash/bulk-force-delete', [ProgramTrashController::class, 'bulkForceDelete'])->name('programs.trash.bulk-force-delete');
 
     // Equipment Trash
     Route::get('equipment/trash', [EquipmentTrashController::class, 'index'])->name('equipment.trash.index');
     Route::put('equipment/{uuid}/restore', [EquipmentTrashController::class, 'restore'])->name('equipment.trash.restore');
     Route::delete('equipment/{uuid}/force-delete', [EquipmentTrashController::class, 'forceDelete'])->name('equipment.trash.force-delete');
     Route::delete('equipment/trash/empty', [EquipmentTrashController::class, 'empty'])->name('equipment.trash.empty');
+    Route::put('equipment/trash/bulk-restore', [EquipmentTrashController::class, 'bulkRestore'])->name('equipment.trash.bulk-restore');
+    Route::delete('equipment/trash/bulk-force-delete', [EquipmentTrashController::class, 'bulkForceDelete'])->name('equipment.trash.bulk-force-delete');
 
     // Schools Trash
     Route::get('schools/trash', [SchoolTrashController::class, 'index'])->name('schools.trash.index');
     Route::put('schools/{uuid}/restore', [SchoolTrashController::class, 'restore'])->name('schools.trash.restore');
     Route::delete('schools/{uuid}/force-delete', [SchoolTrashController::class, 'forceDelete'])->name('schools.trash.force-delete');
     Route::delete('schools/trash/empty', [SchoolTrashController::class, 'empty'])->name('schools.trash.empty');
+    Route::put('schools/trash/bulk-restore', [SchoolTrashController::class, 'bulkRestore'])->name('schools.trash.bulk-restore');
+    Route::delete('schools/trash/bulk-force-delete', [SchoolTrashController::class, 'bulkForceDelete'])->name('schools.trash.bulk-force-delete');
 
     // ==================== CRUD ROUTES ====================
 
