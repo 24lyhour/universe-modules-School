@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import TiptapEditor from '@/components/TiptapEditor.vue';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { SearchableSelect } from '@/components/shared';
@@ -230,11 +230,11 @@ const handleAcChange = (value: boolean | 'indeterminate') => {
         <!-- Description -->
         <div class="space-y-2">
             <Label for="description">Description</Label>
-            <Textarea
-                id="description"
+            <TiptapEditor
                 v-model="model.description"
-                placeholder="Enter classroom description"
-                rows="3"
+                placeholder="Enter classroom description..."
+                min-height="120px"
+                max-height="250px"
             />
             <p v-if="model.errors.description" class="text-xs text-destructive">
                 {{ model.errors.description }}
