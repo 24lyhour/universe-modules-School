@@ -2,8 +2,8 @@
 import { computed } from 'vue';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import TiptapEditor from '@/components/TiptapEditor.vue';
 import {
     Select,
     SelectContent,
@@ -206,11 +206,11 @@ const currentEnrollmentValue = computed({
         <!-- Description -->
         <div class="space-y-2">
             <Label for="description">Description</Label>
-            <Textarea
-                id="description"
+            <TiptapEditor
                 v-model="model.description"
-                placeholder="Enter program description"
-                rows="3"
+                placeholder="Enter program description..."
+                min-height="100px"
+                max-height="200px"
             />
         </div>
 
@@ -289,11 +289,11 @@ const currentEnrollmentValue = computed({
         <!-- Admission Requirements -->
         <div class="space-y-2">
             <Label for="admission_requirements">Admission Requirements</Label>
-            <Textarea
-                id="admission_requirements"
+            <TiptapEditor
                 v-model="model.admission_requirements"
-                placeholder="Enter admission requirements"
-                rows="2"
+                placeholder="Enter admission requirements..."
+                min-height="80px"
+                max-height="150px"
             />
         </div>
 

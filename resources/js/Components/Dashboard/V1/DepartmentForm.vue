@@ -2,8 +2,8 @@
 import { computed } from 'vue';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import TiptapEditor from '@/components/TiptapEditor.vue';
 import {
     Select,
     SelectContent,
@@ -55,6 +55,14 @@ const totalStudentsValue = computed({
     set: (val: string | number | undefined | null) => {
         model.value.total_students = val ? Number(val) : null;
     }
+});
+
+// Computed property for TiptapEditor v-model
+const editorContent = computed({
+    get: () => model.value.description ?? '',
+    set: (val: string) => {
+        model.value.description = val;
+    },
 });
 </script>
 
@@ -113,11 +121,9 @@ const totalStudentsValue = computed({
         <!-- Description -->
         <div class="space-y-2">
             <Label for="description">Description</Label>
-            <Textarea
-                id="description"
-                v-model="model.description"
-                placeholder="Enter department description"
-                rows="3"
+            <TiptapEditor
+                v-model="editorContent"
+                placeholder="Enter department description with formatting..."
             />
             <p v-if="model.errors.description" class="text-xs text-destructive">
                 {{ model.errors.description }}
