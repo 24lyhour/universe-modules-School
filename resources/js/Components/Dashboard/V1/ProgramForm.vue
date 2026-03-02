@@ -209,8 +209,8 @@ const currentEnrollmentValue = computed({
             <TiptapEditor
                 v-model="model.description"
                 placeholder="Enter program description..."
-                min-height="100px"
-                max-height="200px"
+                min-height="200px"
+                max-height="400px"
             />
         </div>
 
@@ -292,8 +292,8 @@ const currentEnrollmentValue = computed({
             <TiptapEditor
                 v-model="model.admission_requirements"
                 placeholder="Enter admission requirements..."
-                min-height="80px"
-                max-height="150px"
+                min-height="150px"
+                max-height="300px"
             />
         </div>
 
