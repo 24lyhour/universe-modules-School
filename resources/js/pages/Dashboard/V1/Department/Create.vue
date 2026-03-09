@@ -1,27 +1,24 @@
 <script setup lang="ts">
-import { ModalForm } from '@/components/shared';
-import { useForm } from '@inertiajs/vue3';
-import { useModal } from 'momentum-modal';
-import { computed, watch } from 'vue';
-import { toast } from 'vue-sonner';
+import { Head, Link, router } from '@inertiajs/vue3';
+import AppLayout from '@/layouts/AppLayout.vue';
+import { Button } from '@/components/ui/button';
 import DepartmentForm from '../../../../Components/Dashboard/V1/DepartmentForm.vue';
+import { useForm } from '@inertiajs/vue3';
+import { watch } from 'vue';
+import { toast } from 'vue-sonner';
 import { departmentSchema } from '@school/validation/departmentSchema';
 import { useFormValidation } from '@/composables/useFormValidation';
+import { ChevronLeft } from 'lucide-vue-next';
+import type { BreadcrumbItem } from '@/types';
 import type { DepartmentFormData, DepartmentCreateProps } from '@school/types';
 
 const props = defineProps<DepartmentCreateProps>();
 
-const { show, close, redirect } = useModal();
-
-const isOpen = computed({
-    get: () => show.value,
-    set: (val: boolean) => {
-        if (!val) {
-            close();
-            redirect();
-        }
-    },
-});
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Dashboard', href: '/dashboard' },
+    { title: 'Departments', href: '/dashboard/departments' },
+    { title: 'Create', href: '/dashboard/departments/create' },
+];
 
 const form = useForm<DepartmentFormData>({
     school_id: '',
@@ -34,13 +31,13 @@ const form = useForm<DepartmentFormData>({
     office_location: '',
     established_year: null,
     total_students: null,
+    total_staff: null,
     status: true,
 });
 
 // Auto-generate code from name
 const generateCode = (name: string): string => {
     if (!name) return '';
-    // Take first 4 letters uppercase + random 3 digits
     const prefix = name
         .replace(/[^a-zA-Z]/g, '')
         .substring(0, 4)
@@ -72,6 +69,7 @@ const getFormData = () => ({
     office_location: form.office_location || null,
     established_year: form.established_year,
     total_students: form.total_students,
+    total_staff: form.total_staff,
     status: form.status,
 });
 
@@ -88,45 +86,47 @@ const handleSubmit = () => {
         form.post('/dashboard/departments', {
             onSuccess: () => {
                 toast.success('Department created successfully.');
-                setTimeout(() => {
-                    close();
-                    redirect();
-                }, 100);
+                router.visit('/dashboard/departments');
             },
         });
     });
 };
-
-const handleCancel = () => {
-    close();
-    redirect();
-};
-
-const isActive = computed({
-    get: () => form.status,
-    set: (value: boolean) => {
-        form.status = value;
-    },
-});
-
 </script>
 
 <template>
-    <ModalForm
-        v-model:open="isOpen"
-        title="Create Department"
-        description="Add a new department to a school"
-        mode="create"
-        size="lg"
-        submit-text="Create Department"
-        :loading="form.processing"
-        :disabled="isFormInvalid"
-        @submit="handleSubmit"
-        @cancel="handleCancel"
-    >
-        <DepartmentForm
-            v-model="form"
-            :schools="props.schools"
-        />
-    </ModalForm>
+    <AppLayout :breadcrumbs="breadcrumbs">
+        <Head title="Create Department" />
+
+        <div class="flex h-full flex-1 flex-col gap-6 p-6">
+            <!-- Header -->
+            <div class="flex items-center gap-4">
+                <Link href="/dashboard/departments" class="text-muted-foreground hover:text-foreground">
+                    <ChevronLeft class="h-5 w-5" />
+                </Link>
+                <div>
+                    <h1 class="text-xl font-semibold">Create Department</h1>
+                    <p class="text-sm text-muted-foreground">Add a new department to a school</p>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <form @submit.prevent="handleSubmit" class="space-y-6">
+                <DepartmentForm
+                    :form="form"
+                    :schools="props.schools"
+                    mode="create"
+                />
+
+                <!-- Actions at Bottom -->
+                <div class="flex justify-end gap-3 pt-4">
+                    <Button type="button" variant="outline" as-child>
+                        <Link href="/dashboard/departments">Cancel</Link>
+                    </Button>
+                    <Button type="submit" :disabled="isFormInvalid || form.processing">
+                        {{ form.processing ? 'Creating...' : 'Create Department' }}
+                    </Button>
+                </div>
+            </form>
+        </div>
+    </AppLayout>
 </template>

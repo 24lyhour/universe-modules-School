@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->uuid('uuid')->unique();
             $table->foreignId('school_id')->constrained('schools')->onDelete('cascade');
+            $table->unsignedBigInteger('class_room_id')->nullable();
             $table->string('name');
             $table->string('code', 50)->nullable()->unique();
             $table->text('description')->nullable();

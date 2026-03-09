@@ -16,6 +16,12 @@ export const schoolSchema = z.object({
     logo: z.string().nullable().optional(),
     established_year: z.number().min(1800, 'Year must be at least 1800').max(new Date().getFullYear(), 'Year cannot be in the future').nullable().optional(),
     accreditation: z.string().max(255, 'Accreditation must be less than 255 characters').nullable().optional(),
+    school_lavel: z.string().max(100, 'School level must be less than 100 characters').nullable().optional(),
+    currency: z.number().nullable().optional(),
+    education_system: z.string().max(100, 'Education system must be less than 100 characters').nullable().optional(),
+    tuition_fee_base: z.number().min(0, 'Tuition fee cannot be negative').nullable().optional(),
+    total_students: z.number().min(0, 'Total students cannot be negative').default(0),
+    total_staff: z.number().min(0, 'Total staff cannot be negative').default(0),
     status: z.boolean(),
 });
 

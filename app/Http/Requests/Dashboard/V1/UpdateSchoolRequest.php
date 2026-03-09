@@ -29,6 +29,12 @@ class UpdateSchoolRequest extends FormRequest
             'logo' => ['nullable', 'string'],
             'established_year' => ['nullable', 'integer', 'min:1800', 'max:' . date('Y')],
             'accreditation' => ['nullable', 'string', 'max:255'],
+            'school_lavel' => ['nullable', 'string', 'max:100'],
+            'currency' => ['nullable', 'integer'],
+            'education_system' => ['nullable', 'string', 'max:100'],
+            'tuition_fee_base' => ['nullable', 'numeric', 'min:0'],
+            'total_students' => ['nullable', 'integer', 'min:0'],
+            'total_staff' => ['nullable', 'integer', 'min:0'],
             'status' => ['required', 'boolean'],
         ];
     }

@@ -46,8 +46,12 @@ class School extends Model
         'logo',
         'established_year',
         'accreditation',
+        'school_lavel',
+        'currency',
+        'education_system',
         'total_students',
         'total_staff',
+        'tuition_fee_base',
         'status',
     ];
 
@@ -59,6 +63,7 @@ class School extends Model
         'total_students' => 'integer',
         'total_staff' => 'integer',
         'status' => 'boolean',
+        'currency' => 'integer'
     ];
 
     /**

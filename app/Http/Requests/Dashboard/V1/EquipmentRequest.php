@@ -27,6 +27,8 @@ class EquipmentRequest extends FormRequest
             'icon' => ['nullable', 'string', 'max:50'],
             'description' => ['nullable', 'string'],
             'category' => ['required', 'string', Rule::in(['technology', 'furniture', 'safety', 'accessibility', 'other'])],
+            'qty' => ['nullable', 'integer', 'min:0'],
+            'price_total' => ['nullable', 'numeric', 'min:0'],
             'status' => ['boolean'],
         ];
     }

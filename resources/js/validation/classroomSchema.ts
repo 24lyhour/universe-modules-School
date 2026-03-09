@@ -13,6 +13,7 @@ export const classroomSchema = z.object({
         errorMap: () => ({ message: 'Please select a valid classroom type' }),
     }),
     equipment: z.array(z.string()).optional().default([]),
+    equipment_ids: z.array(z.number()).optional().default([]),
     description: z.string().max(2000, 'Description must be less than 2000 characters').nullable().optional(),
     has_projector: z.boolean().default(false),
     has_whiteboard: z.boolean().default(true),

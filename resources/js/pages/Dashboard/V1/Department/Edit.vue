@@ -1,27 +1,25 @@
 <script setup lang="ts">
-import { ModalForm } from '@/components/shared';
+import { Head, Link, router } from '@inertiajs/vue3';
+import AppLayout from '@/layouts/AppLayout.vue';
+import { Button } from '@/components/ui/button';
 import DepartmentForm from '../../../../Components/Dashboard/V1/DepartmentForm.vue';
 import { useForm } from '@inertiajs/vue3';
-import { useModal } from 'momentum-modal';
-import { computed, watch } from 'vue';
+import { watch } from 'vue';
 import { toast } from 'vue-sonner';
 import { departmentSchema } from '@school/validation/departmentSchema';
 import { useFormValidation } from '@/composables/useFormValidation';
+import { ChevronLeft } from 'lucide-vue-next';
+import type { BreadcrumbItem } from '@/types';
 import type { DepartmentFormData, DepartmentEditProps } from '@school/types';
 
 const props = defineProps<DepartmentEditProps>();
 
-const { show, close, redirect } = useModal();
-
-const isOpen = computed({
-    get: () => show.value,
-    set: (val: boolean) => {
-        if (!val) {
-            close();
-            redirect();
-        }
-    },
-});
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Dashboard', href: '/dashboard' },
+    { title: 'Departments', href: '/dashboard/departments' },
+    { title: props.department.name, href: `/dashboard/departments/${props.department.uuid}` },
+    { title: 'Edit', href: `/dashboard/departments/${props.department.uuid}/edit` },
+];
 
 const form = useForm<DepartmentFormData>({
     school_id: String(props.department.school_id),
@@ -34,6 +32,7 @@ const form = useForm<DepartmentFormData>({
     office_location: props.department.office_location || '',
     established_year: props.department.established_year,
     total_students: props.department.total_students,
+    total_staff: props.department.total_staff,
     status: props.department.status,
 });
 
@@ -53,6 +52,7 @@ const getFormData = () => ({
     office_location: form.office_location || null,
     established_year: form.established_year,
     total_students: form.total_students,
+    total_staff: form.total_staff,
     status: form.status,
 });
 
@@ -65,38 +65,47 @@ const handleSubmit = () => {
         form.put(`/dashboard/departments/${props.department.uuid}`, {
             onSuccess: () => {
                 toast.success('Department updated successfully.');
-                setTimeout(() => {
-                    close();
-                    redirect();
-                }, 100);
+                router.visit('/dashboard/departments');
             },
         });
     });
 };
-
-const handleCancel = () => {
-    close();
-    redirect();
-};
 </script>
 
 <template>
-    <ModalForm
-        v-model:open="isOpen"
-        title="Edit Department"
-        :description="`Editing: ${department.name}`"
-        mode="edit"
-        size="lg"
-        submit-text="Save Changes"
-        :loading="form.processing"
-        :disabled="isFormInvalid"
-        @submit="handleSubmit"
-        @cancel="handleCancel"
-    >
-        <DepartmentForm
-            v-model="form"
-            :schools="props.schools"
-            mode="edit"
-        />
-    </ModalForm>
+    <AppLayout :breadcrumbs="breadcrumbs">
+        <Head :title="`Edit ${props.department.name}`" />
+
+        <div class="flex h-full flex-1 flex-col gap-6 p-6">
+            <!-- Header -->
+            <div class="flex items-center gap-4">
+                <Link href="/dashboard/departments" class="text-muted-foreground hover:text-foreground">
+                    <ChevronLeft class="h-5 w-5" />
+                </Link>
+                <div>
+                    <h1 class="text-xl font-semibold">Edit Department</h1>
+                    <p class="text-sm text-muted-foreground">Editing: {{ props.department.name }}</p>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <form @submit.prevent="handleSubmit" class="space-y-6">
+                <DepartmentForm
+                    :form="form"
+                    :schools="props.schools"
+                    mode="edit"
+                />
+
+                <!-- Actions at Bottom -->
+                <div class="flex justify-end gap-3 pt-4">
+                    <Button type="button" variant="outline" as-child>
+                        <Link href="/dashboard/departments">Cancel</Link>
+                    </Button>
+                    <Button type="submit" :disabled="isFormInvalid || form.processing">
+                        {{ form.processing ? 'Saving...' : 'Save Changes' }}
+                    </Button>
+                </div>
+            </form>
+        </div>
+    </AppLayout>
 </template>

@@ -52,12 +52,11 @@ class SchoolController extends Controller
     /**
      * Show the form for creating a new school.
      */
-    public function create(): Modal
+    public function create(): Response
     {
         $data = $this->getCreateDataAction->execute();
 
-        return Inertia::modal('school::Dashboard/V1/School/Create', $data)
-            ->baseRoute('school.schools.index');
+        return Inertia::render('school::Dashboard/V1/School/Create', $data);
     }
 
     /**
@@ -65,10 +64,10 @@ class SchoolController extends Controller
      */
     public function store(StoreSchoolRequest $request): RedirectResponse
     {
-        $this->createAction->execute($request->validated());
+        $school = $this->createAction->execute($request->validated());
 
         return redirect()
-            ->route('school.schools.index')
+            ->route('school.schools.show', $school)
             ->with('success', 'School created successfully.');
     }
 
@@ -85,12 +84,11 @@ class SchoolController extends Controller
     /**
      * Show the form for editing the school.
      */
-    public function edit(School $school): Modal
+    public function edit(School $school): Response
     {
         $data = $this->getEditDataAction->execute($school);
 
-        return Inertia::modal('school::Dashboard/V1/School/Edit', $data)
-            ->baseRoute('school.schools.index');
+        return Inertia::render('school::Dashboard/V1/School/Edit', $data);
     }
 
     /**
@@ -101,7 +99,7 @@ class SchoolController extends Controller
         $this->updateAction->execute($school, $request->validated());
 
         return redirect()
-            ->route('school.schools.index')
+            ->route('school.schools.show', $school)
             ->with('success', 'School updated successfully.');
     }
 

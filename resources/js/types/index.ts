@@ -19,6 +19,10 @@ export interface School {
     logo: string | null;
     established_year: number | null;
     accreditation: string | null;
+    school_lavel: string | null;
+    currency: number | null;
+    education_system: string | null;
+    tuition_fee_base: number | null;
     total_students: number;
     total_staff: number;
     status: boolean;
@@ -71,6 +75,12 @@ export interface SchoolFormData {
     logo: string;
     established_year: number | null;
     accreditation: string;
+    school_lavel: string;
+    currency: number | null;
+    education_system: string;
+    tuition_fee_base: number | null;
+    total_students: number;
+    total_staff: number;
     status: boolean;
 }
 
@@ -132,6 +142,7 @@ export interface Department {
     established_year: number | null;
     staff_count: number;
     total_students: number | null;
+    total_staff: number | null;
     status: boolean;
     school_name: string | null;
     school?: {
@@ -160,7 +171,7 @@ export interface DepartmentFilters {
 }
 
 export interface DepartmentFormData {
-    school_id: string;
+    school_id: string | number;
     name: string;
     code: string;
     description: string;
@@ -170,6 +181,7 @@ export interface DepartmentFormData {
     office_location: string;
     established_year: number | null;
     total_students: number | null;
+    total_staff: number | null;
     status: boolean;
 }
 
@@ -575,6 +587,8 @@ export interface Equipment {
     description: string | null;
     category: EquipmentCategory;
     category_label: string;
+    qty: number;
+    price_total: number | null;
     status: boolean;
     classrooms_count: number | null;
     created_at: string;
@@ -605,6 +619,8 @@ export interface EquipmentFormData {
     icon: string;
     description: string;
     category: EquipmentCategory;
+    qty: number;
+    price_total: number | null;
     status: boolean;
 }
 

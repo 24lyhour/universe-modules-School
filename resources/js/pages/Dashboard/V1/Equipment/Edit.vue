@@ -27,6 +27,8 @@ const form = useForm<EquipmentFormData>({
     icon: props.equipment.icon || '',
     description: props.equipment.description || '',
     category: props.equipment.category,
+    qty: props.equipment.qty ?? 0,
+    price_total: props.equipment.price_total,
     status: props.equipment.status,
 });
 

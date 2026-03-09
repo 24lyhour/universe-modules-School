@@ -20,6 +20,8 @@ return new class extends Migration
             $table->string('icon', 50)->nullable(); // lucide icon name
             $table->text('description')->nullable();
             $table->enum('category', ['technology', 'furniture', 'safety', 'accessibility', 'other'])->default('other');
+            $table->integer('qty')->default(0);
+            $table->decimal('price_total', 12, 2)->nullable();
             $table->boolean('status')->default(true);
             $table->timestamps();
             $table->softDeletes();

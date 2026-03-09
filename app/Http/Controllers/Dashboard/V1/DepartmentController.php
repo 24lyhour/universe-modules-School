@@ -54,12 +54,11 @@ class DepartmentController extends Controller
     /**
      * Show the form for creating a new department.
      */
-    public function create(): Modal
+    public function create(): Response
     {
         $data = $this->getCreateDataAction->execute();
 
-        return Inertia::modal('school::Dashboard/V1/Department/Create', $data)
-            ->baseRoute('school.departments.index');
+        return Inertia::render('school::Dashboard/V1/Department/Create', $data);
     }
 
     /**
@@ -87,12 +86,11 @@ class DepartmentController extends Controller
     /**
      * Show the form for editing the department.
      */
-    public function edit(Department $department): Modal
+    public function edit(Department $department): Response
     {
         $data = $this->getEditDataAction->execute($department);
 
-        return Inertia::modal('school::Dashboard/V1/Department/Edit', $data)
-            ->baseRoute('school.departments.index');
+        return Inertia::render('school::Dashboard/V1/Department/Edit', $data);
     }
 
     /**

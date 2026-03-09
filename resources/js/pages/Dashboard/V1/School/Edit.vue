@@ -1,27 +1,25 @@
 <script setup lang="ts">
-import { ModalForm } from '@/components/shared';
-import { useForm } from '@inertiajs/vue3';
-import { useModal } from 'momentum-modal';
-import { computed, watch } from 'vue';
-import { toast } from 'vue-sonner';
+import { Head, Link, router } from '@inertiajs/vue3';
+import AppLayout from '@/layouts/AppLayout.vue';
+import { Button } from '@/components/ui/button';
 import SchoolForm from '../../../../Components/Dashboard/V1/SchoolForm.vue';
+import { useForm } from '@inertiajs/vue3';
+import { watch } from 'vue';
+import { toast } from 'vue-sonner';
 import { schoolSchema } from '@school/validation/schoolSchema';
 import { useFormValidation } from '@/composables/useFormValidation';
-import type { SchoolFormData, SchoolEditProps, SchoolType } from '@school/types';
+import { ChevronLeft } from 'lucide-vue-next';
+import type { BreadcrumbItem } from '@/types';
+import type { SchoolFormData, SchoolEditProps } from '@school/types';
 
 const props = defineProps<SchoolEditProps>();
 
-const { show, close, redirect } = useModal();
-
-const isOpen = computed({
-    get: () => show.value,
-    set: (val: boolean) => {
-        if (!val) {
-            close();
-            redirect();
-        }
-    },
-});
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Dashboard', href: '/dashboard' },
+    { title: 'Schools', href: '/dashboard/schools' },
+    { title: props.school.name, href: `/dashboard/schools/${props.school.uuid}` },
+    { title: 'Edit', href: `/dashboard/schools/${props.school.uuid}/edit` },
+];
 
 const form = useForm<SchoolFormData>({
     name: props.school.name,
@@ -37,6 +35,12 @@ const form = useForm<SchoolFormData>({
     logo: props.school.logo || '',
     established_year: props.school.established_year,
     accreditation: props.school.accreditation || '',
+    school_lavel: props.school.school_lavel || '',
+    currency: props.school.currency,
+    education_system: props.school.education_system || '',
+    tuition_fee_base: props.school.tuition_fee_base,
+    total_students: props.school.total_students,
+    total_staff: props.school.total_staff,
     status: props.school.status,
 });
 
@@ -59,6 +63,12 @@ const getFormData = () => ({
     logo: form.logo || null,
     established_year: form.established_year,
     accreditation: form.accreditation || null,
+    school_lavel: form.school_lavel || null,
+    currency: form.currency,
+    education_system: form.education_system || null,
+    tuition_fee_base: form.tuition_fee_base,
+    total_students: form.total_students,
+    total_staff: form.total_staff,
     status: form.status,
 });
 
@@ -71,46 +81,47 @@ const handleSubmit = () => {
         form.put(`/dashboard/schools/${props.school.uuid}`, {
             onSuccess: () => {
                 toast.success('School updated successfully.');
-                setTimeout(() => {
-                    close();
-                    redirect();
-                }, 100);
+                router.visit(`/dashboard/schools/${props.school.uuid}`);
             },
         });
     });
 };
-
-const handleCancel = () => {
-    close();
-    redirect();
-};
-
-const isActive = computed({
-    get: () => form.status,
-    set: (value: boolean) => {
-        form.status = value;
-    },
-});
-
 </script>
 
 <template>
-    <ModalForm
-        v-model:open="isOpen"
-        title="Edit School"
-        :description="`Editing: ${school.name}`"
-        mode="edit"
-        size="lg"
-        submit-text="Save Changes"
-        :loading="form.processing"
-        :disabled="isFormInvalid"
-        @submit="handleSubmit"
-        @cancel="handleCancel"
-    >
-        <SchoolForm
-            v-model="form"
-            :types="props.types"
-            mode="edit"
-        />
-    </ModalForm>
+    <AppLayout :breadcrumbs="breadcrumbs">
+        <Head :title="`Edit ${school.name}`" />
+
+        <div class="flex h-full flex-1 flex-col gap-6 p-6">
+            <!-- Header -->
+            <div class="flex items-center gap-4">
+                <Link :href="`/dashboard/schools/${school.uuid}`" class="text-muted-foreground hover:text-foreground">
+                    <ChevronLeft class="h-5 w-5" />
+                </Link>
+                <div>
+                    <h1 class="text-xl font-semibold">Edit School</h1>
+                    <p class="text-sm text-muted-foreground">{{ school.name }} - {{ school.code || 'No Code' }}</p>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <form @submit.prevent="handleSubmit" class="space-y-6">
+                <SchoolForm
+                    :form="form"
+                    mode="edit"
+                    :types="props.types"
+                />
+
+                <!-- Actions at Bottom -->
+                <div class="flex justify-end gap-3 pt-4">
+                    <Button type="button" variant="outline" as-child>
+                        <Link :href="`/dashboard/schools/${school.uuid}`">Cancel</Link>
+                    </Button>
+                    <Button type="submit" :disabled="isFormInvalid || form.processing">
+                        {{ form.processing ? 'Saving...' : 'Save Changes' }}
+                    </Button>
+                </div>
+            </form>
+        </div>
+    </AppLayout>
 </template>

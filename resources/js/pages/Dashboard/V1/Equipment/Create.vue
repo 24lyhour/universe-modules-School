@@ -27,6 +27,8 @@ const form = useForm<EquipmentFormData>({
     icon: '',
     description: '',
     category: 'other',
+    qty: 0,
+    price_total: null,
     status: true,
 });
 

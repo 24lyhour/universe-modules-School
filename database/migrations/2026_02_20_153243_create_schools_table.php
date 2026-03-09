@@ -27,6 +27,10 @@ return new class extends Migration
             $table->string('logo', 255)->nullable();
             $table->integer('established_year')->nullable();
             $table->string('accreditation', 255)->nullable();
+            $table->string('school_lavel', 100)->nullable();
+            $table->integer('currency')->nullable();
+            $table->string('education_system', 100)->nullable();
+            $table->decimal('tuition_fee_base', 12, 2)->nullable();
             $table->integer('total_students')->default(0);
             $table->integer('total_staff')->default(0);
             $table->boolean('status')->default(true);

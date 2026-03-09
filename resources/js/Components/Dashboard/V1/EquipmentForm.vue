@@ -44,6 +44,20 @@ const isActive = computed({
         model.value.status = value;
     },
 });
+
+const qtyValue = computed({
+    get: () => model.value.qty ?? 0,
+    set: (val: string | number | undefined | null) => {
+        model.value.qty = val ? Number(val) : 0;
+    }
+});
+
+const priceTotalValue = computed({
+    get: () => model.value.price_total ?? undefined,
+    set: (val: string | number | undefined | null) => {
+        model.value.price_total = val ? Number(val) : null;
+    }
+});
 </script>
 
 <template>
@@ -123,6 +137,37 @@ const isActive = computed({
             <p v-if="model.errors.description" class="text-xs text-destructive">
                 {{ model.errors.description }}
             </p>
+        </div>
+
+        <!-- Quantity & Price -->
+        <div class="grid gap-4 sm:grid-cols-2">
+            <div class="space-y-2">
+                <Label for="qty">Quantity</Label>
+                <Input
+                    id="qty"
+                    type="number"
+                    v-model.number="qtyValue"
+                    placeholder="0"
+                    min="0"
+                />
+                <p v-if="model.errors.qty" class="text-xs text-destructive">
+                    {{ model.errors.qty }}
+                </p>
+            </div>
+            <div class="space-y-2">
+                <Label for="price_total">Total Price</Label>
+                <Input
+                    id="price_total"
+                    type="number"
+                    step="0.01"
+                    v-model.number="priceTotalValue"
+                    placeholder="0.00"
+                    min="0"
+                />
+                <p v-if="model.errors.price_total" class="text-xs text-destructive">
+                    {{ model.errors.price_total }}
+                </p>
+            </div>
         </div>
 
         <!-- Status -->
