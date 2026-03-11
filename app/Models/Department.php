@@ -38,6 +38,11 @@ class Department extends Model
         'email',
         'phone',
         'office_location',
+        'latitude',
+        'longitude',
+        'geofence_radius',
+        'enforce_geofence',
+        'timezone',
         'established_year',
         'total_students',
         'status',
@@ -50,6 +55,10 @@ class Department extends Model
         'established_year' => 'integer',
         'total_students' => 'integer',
         'status' => 'boolean',
+        'latitude' => 'decimal:8',
+        'longitude' => 'decimal:8',
+        'geofence_radius' => 'integer',
+        'enforce_geofence' => 'boolean',
     ];
 
     /**
@@ -140,5 +149,97 @@ class Department extends Model
     public function getRouteKeyName(): string
     {
         return 'uuid';
+    }
+
+    /**
+     * Check if a location is within the department's geofence.
+     *
+     * Uses the Haversine formula to calculate distance between two GPS coordinates.
+     * Industry standard for geofence verification.
+     *
+     * @param float|null $lat Latitude to check
+     * @param float|null $lng Longitude to check
+     * @return array{within: bool, distance: float|null, radius: int}
+     */
+    public function isWithinGeofence(?float $lat, ?float $lng): array
+    {
+        // If geofence not configured or not enforced
+        if (!$this->latitude || !$this->longitude) {
+            return [
+                'within' => true,
+                'distance' => null,
+                'radius' => $this->geofence_radius ?? 100,
+                'configured' => false,
+            ];
+        }
+
+        // If no scan location provided
+        if (!$lat || !$lng) {
+            return [
+                'within' => !$this->enforce_geofence, // Allow if not enforced
+                'distance' => null,
+                'radius' => $this->geofence_radius,
+                'configured' => true,
+            ];
+        }
+
+        // Calculate distance using Haversine formula
+        $distance = $this->calculateDistance($this->latitude, $this->longitude, $lat, $lng);
+
+        return [
+            'within' => $distance <= $this->geofence_radius,
+            'distance' => round($distance, 2),
+            'radius' => $this->geofence_radius,
+            'configured' => true,
+        ];
+    }
+
+    /**
+     * Calculate distance between two GPS coordinates using Haversine formula.
+     *
+     * @param float $lat1 First latitude
+     * @param float $lng1 First longitude
+     * @param float $lat2 Second latitude
+     * @param float $lng2 Second longitude
+     * @return float Distance in meters
+     */
+    public function calculateDistance(float $lat1, float $lng1, float $lat2, float $lng2): float
+    {
+        $earthRadius = 6371000; // Earth's radius in meters
+
+        $latDelta = deg2rad($lat2 - $lat1);
+        $lngDelta = deg2rad($lng2 - $lng1);
+
+        $a = sin($latDelta / 2) * sin($latDelta / 2) +
+            cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+            sin($lngDelta / 2) * sin($lngDelta / 2);
+
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+
+        return $earthRadius * $c;
+    }
+
+    /**
+     * Check if department has geofence configured.
+     */
+    public function hasGeofence(): bool
+    {
+        return $this->latitude !== null && $this->longitude !== null;
+    }
+
+    /**
+     * Get Google Maps URL for the department location.
+     */
+    public function getGoogleMapsUrl(): ?string
+    {
+        if (!$this->latitude || !$this->longitude) {
+            return null;
+        }
+
+        return sprintf(
+            'https://www.google.com/maps?q=%s,%s',
+            $this->latitude,
+            $this->longitude
+        );
     }
 }
