@@ -34,6 +34,13 @@ const form = useForm<DepartmentFormData>({
     total_students: props.department.total_students,
     total_staff: props.department.total_staff,
     status: props.department.status,
+    // Location linking for geofence
+    location_id: props.department.location_id ?? null,
+    latitude: props.department.latitude,
+    longitude: props.department.longitude,
+    geofence_radius: props.department.geofence_radius ?? 100,
+    enforce_geofence: props.department.enforce_geofence ?? false,
+    timezone: props.department.timezone ?? null,
 });
 
 const { validateForm, validateAndSubmit, createIsFormInvalid } = useFormValidation(
@@ -54,6 +61,14 @@ const getFormData = () => ({
     total_students: form.total_students,
     total_staff: form.total_staff,
     status: form.status,
+    // Location linking (preferred)
+    location_id: form.location_id,
+    // Manual geofence fields (fallback if no location_id)
+    latitude: form.latitude,
+    longitude: form.longitude,
+    geofence_radius: form.geofence_radius,
+    enforce_geofence: form.enforce_geofence,
+    timezone: form.timezone,
 });
 
 watch([() => form.name, () => form.school_id], () => validateForm(getFormData()));
@@ -93,6 +108,7 @@ const handleSubmit = () => {
                 <DepartmentForm
                     :form="form"
                     :schools="props.schools"
+                    :available-locations="props.availableLocations"
                     mode="edit"
                 />
 

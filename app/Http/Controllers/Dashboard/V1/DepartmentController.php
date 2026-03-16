@@ -202,24 +202,55 @@ class DepartmentController extends Controller
      */
     public function qrCode(Department $department): Response
     {
-        $department->load('school:id,name');
+        $department->load(['school:id,name', 'location']);
 
-        $qrData = json_encode([
+        // Build QR data including geofence info from linked location
+        $location = $department->location;
+        $qrDataArray = [
             'type' => 'department',
             'department_id' => $department->id,
             'department_code' => $department->code,
             'department_name' => $department->name,
             'school_name' => $department->school?->name,
             'scan_type' => 'attendance',
-        ]);
+        ];
+
+        // Include geofence data if location is linked
+        if ($location) {
+            $qrDataArray['geofence'] = [
+                'location_id' => $location->id,
+                'latitude' => (float) $location->latitude,
+                'longitude' => (float) $location->longitude,
+                'radius' => $location->geofence_radius,
+                'type' => $location->geofence_type,
+                'enforce' => $location->enforce_geofence,
+            ];
+        }
+
+        $qrData = json_encode($qrDataArray);
 
         return Inertia::render('school::Dashboard/V1/Department/QrCode', [
             'department' => [
                 'id' => $department->id,
+                'uuid' => $department->uuid,
                 'name' => $department->name,
                 'code' => $department->code,
                 'school_name' => $department->school?->name,
             ],
+            'location' => $location ? [
+                'id' => $location->id,
+                'uuid' => $location->uuid,
+                'name' => $location->name,
+                'code' => $location->code,
+                'type' => $location->type,
+                'geofence_type' => $location->geofence_type,
+                'geofence_radius' => $location->geofence_radius,
+                'enforce_geofence' => $location->enforce_geofence,
+                'latitude' => (float) $location->latitude,
+                'longitude' => (float) $location->longitude,
+                'is_active' => $location->is_active,
+                'city' => $location->city,
+            ] : null,
             'qrData' => $qrData,
         ]);
     }

@@ -128,6 +128,23 @@ export interface SchoolOption {
     label: string;
 }
 
+export interface DepartmentLocation {
+    id: number;
+    uuid: string;
+    name: string;
+    code: string | null;
+    type: string;
+    latitude: number;
+    longitude: number;
+    geofence_radius: number;
+    geofence_type: string;
+    polygon_coordinates: [number, number][] | null;
+    enforce_geofence: boolean;
+    timezone: string;
+    is_active: boolean;
+    google_maps_url: string;
+}
+
 export interface Department {
     id: number;
     uuid: string;
@@ -144,6 +161,18 @@ export interface Department {
     total_students: number | null;
     total_staff: number | null;
     status: boolean;
+    // Linked Location (preferred geofence source)
+    location_id: number | null;
+    location?: DepartmentLocation | null;
+    // Geofence fields (derived from location or fallback)
+    latitude: number | null;
+    longitude: number | null;
+    geofence_radius: number;
+    enforce_geofence: boolean;
+    timezone: string | null;
+    has_geofence: boolean;
+    google_maps_url: string | null;
+    // Relations
     school_name: string | null;
     school?: {
         id: number;
@@ -183,6 +212,14 @@ export interface DepartmentFormData {
     total_students: number | null;
     total_staff: number | null;
     status: boolean;
+    // Location linking (preferred geofence source)
+    location_id: number | null;
+    // Geofence fields (fallback if no location linked)
+    latitude: number | null;
+    longitude: number | null;
+    geofence_radius: number;
+    enforce_geofence: boolean;
+    timezone: string | null;
 }
 
 export interface DepartmentIndexProps {
@@ -202,13 +239,24 @@ export interface DepartmentShowProps {
     };
 }
 
+export interface LocationOption {
+    value: string;
+    label: string;
+    type: string;
+    city: string | null;
+    geofence_type: string;
+    geofence_radius: number;
+}
+
 export interface DepartmentCreateProps {
     schools: SchoolOption[];
+    availableLocations: LocationOption[];
 }
 
 export interface DepartmentEditProps {
     department: Department;
     schools: SchoolOption[];
+    availableLocations: LocationOption[];
 }
 
 export interface DepartmentDeleteProps {

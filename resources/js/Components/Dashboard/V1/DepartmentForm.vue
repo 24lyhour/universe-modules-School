@@ -1,9 +1,14 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+import { Link } from '@inertiajs/vue3';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Slider } from '@/components/ui/slider';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import TiptapEditor from '@/components/TiptapEditor.vue';
 import {
     Select,
@@ -12,19 +17,30 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Building2 } from 'lucide-vue-next';
+import { Building2, MapPin, Shield, Plus, Unlink, Navigation, Globe } from 'lucide-vue-next';
 import type { InertiaForm } from '@inertiajs/vue3';
 import type { DepartmentFormData, SchoolOption } from '@school/types';
+
+interface LocationOption {
+    value: string;
+    label: string;
+    type: string;
+    city: string | null;
+    geofence_type: string;
+    geofence_radius: number;
+}
 
 interface Props {
     form: InertiaForm<DepartmentFormData>;
     mode?: 'create' | 'edit';
     schools: SchoolOption[];
+    availableLocations?: LocationOption[];
 }
 
 const props = withDefaults(defineProps<Props>(), {
     mode: 'create',
     schools: () => [],
+    availableLocations: () => [],
 });
 
 // Convert school_id to string for Select component
@@ -72,6 +88,122 @@ const editorContent = computed({
         props.form.description = val;
     },
 });
+
+// Location selection computed property
+const locationIdString = computed({
+    get: () => props.form.location_id ? String(props.form.location_id) : '',
+    set: (val: string) => {
+        props.form.location_id = val ? Number(val) : null;
+    },
+});
+
+// Get selected location details
+const selectedLocation = computed(() => {
+    if (!props.form.location_id) return null;
+    return props.availableLocations.find(loc => loc.value === String(props.form.location_id));
+});
+
+// Check if location is linked
+const hasLinkedLocation = computed(() => {
+    return props.form.location_id !== null && props.form.location_id !== undefined;
+});
+
+// Unlink location
+const unlinkLocation = () => {
+    props.form.location_id = null;
+};
+
+// Geofence mode: 'location' (linked) or 'manual' (direct coordinates)
+const geofenceMode = ref<'location' | 'manual'>(
+    props.form.location_id ? 'location' : (props.form.latitude ? 'manual' : 'location')
+);
+
+// Latitude computed property
+const latitudeValue = computed({
+    get: () => props.form.latitude ?? undefined,
+    set: (val: string | number | undefined | null) => {
+        props.form.latitude = val ? Number(val) : null;
+    }
+});
+
+// Longitude computed property
+const longitudeValue = computed({
+    get: () => props.form.longitude ?? undefined,
+    set: (val: string | number | undefined | null) => {
+        props.form.longitude = val ? Number(val) : null;
+    }
+});
+
+// Geofence radius as array for Slider component
+const geofenceRadiusArray = computed({
+    get: () => [props.form.geofence_radius ?? 100],
+    set: (val: number[]) => {
+        props.form.geofence_radius = val[0];
+    }
+});
+
+// Enforce geofence computed
+const enforceGeofenceValue = computed({
+    get: () => props.form.enforce_geofence ?? false,
+    set: (val: boolean) => {
+        props.form.enforce_geofence = val;
+    }
+});
+
+// Handle mode change
+const handleModeChange = (mode: string) => {
+    geofenceMode.value = mode as 'location' | 'manual';
+    if (mode === 'manual') {
+        // Clear location_id when switching to manual
+        props.form.location_id = null;
+    } else {
+        // Clear manual coordinates when switching to location
+        props.form.latitude = null;
+        props.form.longitude = null;
+    }
+};
+
+// Get current location
+const getCurrentLocation = () => {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                props.form.latitude = position.coords.latitude;
+                props.form.longitude = position.coords.longitude;
+            },
+            (error) => {
+                console.error('Error getting location:', error);
+            }
+        );
+    }
+};
+
+// Check if manual geofence is configured
+const hasManualGeofence = computed(() => {
+    return props.form.latitude !== null && props.form.longitude !== null;
+});
+
+// Format geofence type for display
+const formatGeofenceType = (type: string): string => {
+    const types: Record<string, string> = {
+        circle: 'Circle (Radius)',
+        polygon: 'Polygon (Custom Shape)',
+        dynamic: 'Dynamic (Moving)',
+    };
+    return types[type] || type;
+};
+
+// Format location type for display
+const formatLocationType = (type: string): string => {
+    const types: Record<string, string> = {
+        office: 'Office',
+        branch: 'Branch',
+        site: 'Site',
+        remote: 'Remote',
+        other: 'Other',
+    };
+    return types[type] || type;
+};
 </script>
 
 <template>
@@ -230,6 +362,223 @@ const editorContent = computed({
                             </p>
                         </div>
                     </div>
+                </CardContent>
+            </Card>
+
+            <!-- Geofence Configuration Card -->
+            <Card>
+                <CardHeader class="pb-3">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <CardTitle class="flex items-center gap-2 text-base">
+                                <Shield class="h-4 w-4" />
+                                Geofence Configuration
+                            </CardTitle>
+                            <CardDescription class="mt-1">
+                                Set up location-based attendance verification
+                            </CardDescription>
+                        </div>
+                        <Badge v-if="hasLinkedLocation || hasManualGeofence" variant="default" class="gap-1">
+                            <Shield class="h-3 w-3" />
+                            Configured
+                        </Badge>
+                        <Badge v-else variant="secondary">Not Configured</Badge>
+                    </div>
+                </CardHeader>
+                <CardContent class="space-y-4">
+                    <Tabs :default-value="geofenceMode" @update:model-value="handleModeChange">
+                        <TabsList class="grid w-full grid-cols-2">
+                            <TabsTrigger value="location">
+                                <MapPin class="h-4 w-4 mr-2" />
+                                Link Location
+                            </TabsTrigger>
+                            <TabsTrigger value="manual">
+                                <Navigation class="h-4 w-4 mr-2" />
+                                Manual Setup
+                            </TabsTrigger>
+                        </TabsList>
+
+                        <!-- Location Linking Tab -->
+                        <TabsContent value="location" class="space-y-4 mt-4">
+                            <div class="space-y-2">
+                                <Label>Select Location</Label>
+                                <Select v-model="locationIdString">
+                                    <SelectTrigger :class="{ 'border-primary': hasLinkedLocation }">
+                                        <div class="flex items-center gap-2">
+                                            <MapPin :class="['h-4 w-4', hasLinkedLocation ? 'text-primary' : 'text-muted-foreground']" />
+                                            <SelectValue placeholder="Choose a scan location..." />
+                                        </div>
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem
+                                            v-for="location in props.availableLocations"
+                                            :key="location.value"
+                                            :value="location.value"
+                                        >
+                                            <div class="flex flex-col">
+                                                <span>{{ location.label }}</span>
+                                                <span class="text-xs text-muted-foreground">
+                                                    {{ formatLocationType(location.type) }}
+                                                    <template v-if="location.city"> · {{ location.city }}</template>
+                                                    · {{ formatGeofenceType(location.geofence_type) }}
+                                                    <template v-if="location.geofence_type === 'circle'">
+                                                        ({{ location.geofence_radius }}m)
+                                                    </template>
+                                                </span>
+                                            </div>
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <p class="text-xs text-muted-foreground">
+                                    Locations are managed at <a href="/dashboard/locations" target="_blank" class="text-primary hover:underline">Dashboard → Locations</a>
+                                </p>
+                            </div>
+
+                            <!-- Selected Location Details -->
+                            <div v-if="selectedLocation" class="rounded-lg border bg-muted/30 p-4 space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-medium text-sm">{{ selectedLocation.label }}</h4>
+                                    <Button variant="ghost" size="sm" @click="unlinkLocation" class="h-8 text-xs text-muted-foreground hover:text-destructive">
+                                        <Unlink class="h-3 w-3 mr-1" />
+                                        Unlink
+                                    </Button>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3 text-sm">
+                                    <div>
+                                        <p class="text-xs text-muted-foreground">Type</p>
+                                        <p>{{ formatLocationType(selectedLocation.type) }}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-muted-foreground">Geofence</p>
+                                        <p>{{ formatGeofenceType(selectedLocation.geofence_type) }}</p>
+                                    </div>
+                                    <div v-if="selectedLocation.geofence_type === 'circle'">
+                                        <p class="text-xs text-muted-foreground">Radius</p>
+                                        <p>{{ selectedLocation.geofence_radius }}m</p>
+                                    </div>
+                                    <div v-if="selectedLocation.city">
+                                        <p class="text-xs text-muted-foreground">City</p>
+                                        <p>{{ selectedLocation.city }}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- No Location State -->
+                            <div v-else class="rounded-lg border border-dashed bg-muted/20 p-6 text-center">
+                                <MapPin class="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+                                <p class="text-sm text-muted-foreground mb-3">
+                                    No location linked. Select an existing location above or create a new one.
+                                </p>
+                                <Button variant="outline" size="sm" as-child>
+                                    <Link href="/dashboard/locations/create" target="_blank">
+                                        <Plus class="h-4 w-4 mr-1" />
+                                        Create New Location
+                                    </Link>
+                                </Button>
+                            </div>
+                        </TabsContent>
+
+                        <!-- Manual Setup Tab -->
+                        <TabsContent value="manual" class="space-y-4 mt-4">
+                            <!-- Coordinates -->
+                            <div class="grid gap-4 sm:grid-cols-2">
+                                <div class="space-y-2">
+                                    <Label for="latitude">Latitude</Label>
+                                    <Input
+                                        id="latitude"
+                                        type="number"
+                                        step="0.00000001"
+                                        v-model.number="latitudeValue"
+                                        placeholder="e.g., 11.5564"
+                                        :class="{ 'border-destructive': props.form.errors.latitude }"
+                                    />
+                                    <p v-if="props.form.errors.latitude" class="text-xs text-destructive">
+                                        {{ props.form.errors.latitude }}
+                                    </p>
+                                </div>
+                                <div class="space-y-2">
+                                    <Label for="longitude">Longitude</Label>
+                                    <Input
+                                        id="longitude"
+                                        type="number"
+                                        step="0.00000001"
+                                        v-model.number="longitudeValue"
+                                        placeholder="e.g., 104.9282"
+                                        :class="{ 'border-destructive': props.form.errors.longitude }"
+                                    />
+                                    <p v-if="props.form.errors.longitude" class="text-xs text-destructive">
+                                        {{ props.form.errors.longitude }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Get Current Location Button -->
+                            <Button type="button" variant="outline" size="sm" @click="getCurrentLocation" class="w-full">
+                                <Globe class="h-4 w-4 mr-2" />
+                                Use My Current Location
+                            </Button>
+
+                            <!-- Geofence Radius -->
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <Label>Geofence Radius</Label>
+                                    <span class="text-sm font-medium">{{ props.form.geofence_radius ?? 100 }}m</span>
+                                </div>
+                                <Slider
+                                    v-model="geofenceRadiusArray"
+                                    :min="10"
+                                    :max="1000"
+                                    :step="10"
+                                    class="w-full"
+                                />
+                                <p class="text-xs text-muted-foreground">
+                                    Employees must be within this radius to check in/out
+                                </p>
+                            </div>
+
+                            <!-- Enforce Geofence Toggle -->
+                            <div class="flex items-center justify-between rounded-lg border p-4">
+                                <div class="space-y-0.5">
+                                    <Label class="text-sm font-medium">Enforce Geofence</Label>
+                                    <p class="text-xs text-muted-foreground">
+                                        Block attendance if employee is outside the geofence
+                                    </p>
+                                </div>
+                                <Switch v-model="enforceGeofenceValue" />
+                            </div>
+
+                            <!-- Timezone -->
+                            <div class="space-y-2">
+                                <Label for="timezone">Timezone</Label>
+                                <Select v-model="props.form.timezone">
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select timezone..." />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Asia/Phnom_Penh">Asia/Phnom_Penh (UTC+7)</SelectItem>
+                                        <SelectItem value="Asia/Bangkok">Asia/Bangkok (UTC+7)</SelectItem>
+                                        <SelectItem value="Asia/Ho_Chi_Minh">Asia/Ho_Chi_Minh (UTC+7)</SelectItem>
+                                        <SelectItem value="Asia/Singapore">Asia/Singapore (UTC+8)</SelectItem>
+                                        <SelectItem value="Asia/Tokyo">Asia/Tokyo (UTC+9)</SelectItem>
+                                        <SelectItem value="UTC">UTC (UTC+0)</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <!-- Manual Geofence Status -->
+                            <div v-if="hasManualGeofence" class="rounded-lg border bg-green-50 dark:bg-green-950 p-4">
+                                <div class="flex items-center gap-2 text-green-700 dark:text-green-400">
+                                    <Shield class="h-4 w-4" />
+                                    <span class="text-sm font-medium">Geofence Configured</span>
+                                </div>
+                                <p class="text-xs text-green-600 dark:text-green-500 mt-1">
+                                    Location: {{ props.form.latitude?.toFixed(6) }}, {{ props.form.longitude?.toFixed(6) }}
+                                    · Radius: {{ props.form.geofence_radius }}m
+                                    · Enforce: {{ props.form.enforce_geofence ? 'Yes' : 'No' }}
+                                </p>
+                            </div>
+                        </TabsContent>
+                    </Tabs>
                 </CardContent>
             </Card>
         </div>

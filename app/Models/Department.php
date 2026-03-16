@@ -7,9 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use Modules\Employee\Models\Employee;
+use Modules\Employee\Models\Location;
 
 class Department extends Model
 {
@@ -144,6 +146,17 @@ class Department extends Model
     }
 
     /**
+     * Get the geofence location for the department.
+     *
+     * Uses the existing Location system with polymorphic relationship.
+     * Location provides comprehensive geofence support (circle, polygon, dynamic).
+     */
+    public function location(): MorphOne
+    {
+        return $this->morphOne(Location::class, 'locationable');
+    }
+
+    /**
      * Get the route key for the model.
      */
     public function getRouteKeyName(): string
@@ -152,45 +165,63 @@ class Department extends Model
     }
 
     /**
-     * Check if a location is within the department's geofence.
+     * Check if a GPS coordinate is within the department's geofence.
      *
-     * Uses the Haversine formula to calculate distance between two GPS coordinates.
-     * Industry standard for geofence verification.
+     * Uses the linked Location model for comprehensive geofence verification.
+     * Supports circle, polygon, and dynamic geofence types.
      *
      * @param float|null $lat Latitude to check
      * @param float|null $lng Longitude to check
-     * @return array{within: bool, distance: float|null, radius: int}
+     * @return array Geofence verification result
      */
     public function isWithinGeofence(?float $lat, ?float $lng): array
     {
-        // If geofence not configured or not enforced
+        // Use linked Location for geofence verification
+        $location = $this->location;
+
+        if ($location) {
+            return $location->verifyLocation($lat, $lng);
+        }
+
+        // Fallback to direct fields if no Location linked (backwards compatibility)
         if (!$this->latitude || !$this->longitude) {
             return [
-                'within' => true,
-                'distance' => null,
-                'radius' => $this->geofence_radius ?? 100,
-                'configured' => false,
+                'verified' => true,
+                'within_geofence' => false,
+                'distance_meters' => null,
+                'geofence_radius' => $this->geofence_radius ?? 100,
+                'geofence_type' => 'none',
+                'message' => 'No geofence configured',
             ];
         }
 
         // If no scan location provided
         if (!$lat || !$lng) {
             return [
-                'within' => !$this->enforce_geofence, // Allow if not enforced
-                'distance' => null,
-                'radius' => $this->geofence_radius,
-                'configured' => true,
+                'verified' => !$this->enforce_geofence,
+                'within_geofence' => false,
+                'distance_meters' => null,
+                'geofence_radius' => $this->geofence_radius,
+                'geofence_type' => 'circle',
+                'message' => $this->enforce_geofence
+                    ? 'Location required for attendance'
+                    : 'Location not provided (optional)',
             ];
         }
 
         // Calculate distance using Haversine formula
         $distance = $this->calculateDistance($this->latitude, $this->longitude, $lat, $lng);
+        $withinGeofence = $distance <= $this->geofence_radius;
 
         return [
-            'within' => $distance <= $this->geofence_radius,
-            'distance' => round($distance, 2),
-            'radius' => $this->geofence_radius,
-            'configured' => true,
+            'verified' => $withinGeofence || !$this->enforce_geofence,
+            'within_geofence' => $withinGeofence,
+            'distance_meters' => round($distance, 2),
+            'geofence_radius' => $this->geofence_radius,
+            'geofence_type' => 'circle',
+            'message' => $withinGeofence
+                ? 'Location verified'
+                : sprintf('Outside geofence (%.0fm away, max %dm)', $distance, $this->geofence_radius),
         ];
     }
 
@@ -221,9 +252,17 @@ class Department extends Model
 
     /**
      * Check if department has geofence configured.
+     *
+     * Checks linked Location first, then falls back to direct fields.
      */
     public function hasGeofence(): bool
     {
+        // Check linked Location first
+        if ($this->location) {
+            return true;
+        }
+
+        // Fallback to direct fields
         return $this->latitude !== null && $this->longitude !== null;
     }
 
@@ -232,6 +271,12 @@ class Department extends Model
      */
     public function getGoogleMapsUrl(): ?string
     {
+        // Use linked Location first
+        if ($this->location) {
+            return $this->location->google_maps_url;
+        }
+
+        // Fallback to direct fields
         if (!$this->latitude || !$this->longitude) {
             return null;
         }

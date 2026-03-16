@@ -15,7 +15,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Building, CheckCircle, XCircle, Search, Eye, Pencil, Trash2, Download, Upload, FileSpreadsheet, Database, Users } from 'lucide-vue-next';
+import { Plus, Building, CheckCircle, XCircle, Search, Eye, Pencil, Trash2, Download, Upload, FileSpreadsheet, Database, Users, QrCode } from 'lucide-vue-next';
 import type { BreadcrumbItem } from '@/types';
 import type { DepartmentIndexProps, Department } from '@school/types';
 
@@ -79,11 +79,16 @@ const actions: TableAction<Department>[] = [
         onClick: (department) => router.visit(`/dashboard/departments/${department.uuid}/edit`),
     },
     {
+        label: 'QR Code',
+        icon: QrCode,
+        onClick: (department) => router.visit(`/dashboard/departments/${department.uuid}/qr-code`),
+        separator: true,
+    },
+    {
         label: 'Delete',
         icon: Trash2,
         onClick: (department) => router.visit(`/dashboard/departments/${department.uuid}/delete`),
         variant: 'destructive',
-        separator: true,
     },
 ];
 

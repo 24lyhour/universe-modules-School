@@ -33,6 +33,13 @@ const form = useForm<DepartmentFormData>({
     total_students: null,
     total_staff: null,
     status: true,
+    // Location linking for geofence
+    location_id: null,
+    latitude: null,
+    longitude: null,
+    geofence_radius: 100,
+    enforce_geofence: false,
+    timezone: null,
 });
 
 // Auto-generate code from name
@@ -71,6 +78,14 @@ const getFormData = () => ({
     total_students: form.total_students,
     total_staff: form.total_staff,
     status: form.status,
+    // Location linking (preferred)
+    location_id: form.location_id,
+    // Manual geofence fields (fallback if no location_id)
+    latitude: form.latitude,
+    longitude: form.longitude,
+    geofence_radius: form.geofence_radius,
+    enforce_geofence: form.enforce_geofence,
+    timezone: form.timezone,
 });
 
 watch([() => form.name, () => form.school_id], () => {
@@ -114,6 +129,7 @@ const handleSubmit = () => {
                 <DepartmentForm
                     :form="form"
                     :schools="props.schools"
+                    :available-locations="props.availableLocations"
                     mode="create"
                 />
 

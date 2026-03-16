@@ -27,6 +27,16 @@ class UpdateDepartmentRequest extends FormRequest
             'total_staff' => ['nullable', 'integer', 'min:0'],
             'total_students' => ['nullable', 'integer', 'min:0'],
             'status' => ['required', 'boolean'],
+
+            // Location linking (preferred geofence source)
+            'location_id' => ['nullable', 'exists:employee_locations,id'],
+
+            // Geofence fields (fallback if no location linked)
+            'latitude' => ['nullable', 'numeric', 'between:-90,90'],
+            'longitude' => ['nullable', 'numeric', 'between:-180,180'],
+            'geofence_radius' => ['nullable', 'integer', 'min:10', 'max:5000'],
+            'enforce_geofence' => ['boolean'],
+            'timezone' => ['nullable', 'string', 'max:50'],
         ];
     }
 
@@ -41,6 +51,13 @@ class UpdateDepartmentRequest extends FormRequest
             'email.email' => 'Please enter a valid email address.',
             'established_year.min' => 'Established year must be at least 1800.',
             'established_year.max' => 'Established year cannot be in the future.',
+
+            // Geofence validation messages
+            'latitude.between' => 'Latitude must be between -90 and 90.',
+            'longitude.between' => 'Longitude must be between -180 and 180.',
+            'geofence_radius.min' => 'Geofence radius must be at least 10 meters.',
+            'geofence_radius.max' => 'Geofence radius cannot exceed 5000 meters.',
+            'timezone.max' => 'Timezone must be less than 50 characters.',
         ];
     }
 }
